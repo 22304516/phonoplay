@@ -474,8 +474,9 @@ render();
                   <button
                     key={cell}
                     className={`search-cell ${
-                      isSelected ? "selected" : ""
+                        isSelected ? "selected" : ""
                     }`}
+                    aria-pressed={isSelected}
                     onClick={() =>
                       selectCell(rowIndex, columnIndex)
                     }

@@ -488,8 +488,8 @@ createBoard();
                 onClick={() => addPhoneme(item.symbol)}
                 title={`${item.symbol} = ${item.english} as in ${item.example}`}
                 aria-label={`${item.symbol}, ${item.english} as in ${item.example}`}
-              >
-                {item.symbol}
+                >
+                <span>{item.symbol}</span>
               </button>
             ))}
 
@@ -502,12 +502,18 @@ createBoard();
             </button>
           </div>
 
-          <p className="phoneme-hint">
-            Hover over a phoneme to see its English equivalent and example.
-          </p>
+          <div className="phoneme-hint">
+            <strong>Phoneme hints:</strong>{" "}
+            Hover over or focus a phoneme to see its English
+            equivalent and an example word.
+          </div>
 
           {won && (
-            <div className="success-message">
+            <div
+                className="success-message"
+                role="status"
+                aria-live="polite"
+            >
               <strong>Correct!</strong>
 
               <p>
@@ -517,7 +523,11 @@ createBoard();
           )}
 
           {gameOver && !won && (
-            <div className="failure-message">
+            <div
+                className="failure-message"
+                role="status"
+                aria-live="polite"
+            >
               <strong>Activity complete.</strong>
 
               <p>

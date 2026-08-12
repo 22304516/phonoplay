@@ -19,16 +19,20 @@ export default function Navbar() {
 
         <span>Assessment 1</span>
         </div>
-        
-      <button
+
+        <button
         className="menu-button"
         onClick={() => setMenuOpen(!menuOpen)}
-        aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+        aria-label={
+            menuOpen
+            ? "Close navigation menu"
+            : "Open navigation menu"
+        }
         aria-expanded={menuOpen}
         aria-controls="navigation-menu"
-      >
-        ☰
-      </button>
+        >
+        {menuOpen ? "✕" : "☰"}
+        </button>
 
       <div
         id="navigation-menu"

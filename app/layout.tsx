@@ -4,8 +4,9 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
 export const metadata: Metadata = {
-  title: "PhonoPlay",
-  description: "Phoneme Activity Builder",
+  title: "PhonoPlay - Phoneme Activity Builder",
+  description:
+    "A phoneme-based classroom activity builder for Speech Pathology education.",
 };
 
 export default function RootLayout({

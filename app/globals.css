@@ -126,6 +126,11 @@ footer p {
   }
 }
 
+html[data-theme="dark"] a:focus-visible,
+html[data-theme="dark"] button:focus-visible {
+  outline-color: #60a5fa;
+}
+
 .wordle-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -780,4 +785,105 @@ html[data-theme="dark"] .theme-options button {
   .about-card {
     padding: 1.5rem;
   }
+}
+
+/* Accessibility: clear keyboard focus */
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+/* Prevent text from becoming too cramped */
+p,
+li {
+  line-height: 1.6;
+}
+
+/* Make interactive controls easier to use */
+button,
+a {
+  min-height: 44px;
+}
+
+/* Dark mode text */
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] body {
+  color: #f9fafb;
+}
+
+/* Home page */
+html[data-theme="dark"] .hero-section h1,
+html[data-theme="dark"] .hero-section h2,
+html[data-theme="dark"] .section-heading h2,
+html[data-theme="dark"] .activity-card h3,
+html[data-theme="dark"] .information-section h2 {
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .hero-description,
+html[data-theme="dark"] .section-heading p,
+html[data-theme="dark"] .activity-card p,
+html[data-theme="dark"] .activity-card li,
+html[data-theme="dark"] .information-section p {
+  color: #d1d5db;
+}
+
+/* About page */
+html[data-theme="dark"] .about-page h1,
+html[data-theme="dark"] .about-page h2,
+html[data-theme="dark"] .about-page h3 {
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .about-page p,
+html[data-theme="dark"] .about-page span {
+  color: #d1d5db;
+}
+
+html[data-theme="dark"] .about-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+html[data-theme="dark"] .video-placeholder {
+  background: #111827;
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] .video-placeholder p {
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .video-placeholder span {
+  color: #9ca3af;
+}
+
+/* Home cards */
+html[data-theme="dark"] .activity-card,
+html[data-theme="dark"] .information-section {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+/* Links */
+html[data-theme="dark"] .text-link {
+  color: #60a5fa;
+}
+
+html[data-theme="dark"] .secondary-button {
+  background: #1f2937;
+  color: #60a5fa;
+  border-color: #60a5fa;
+}
+
+html[data-theme="dark"] .secondary-button:hover {
+  background: #374151;
+}
+
+html[data-theme="dark"] .assessment-label {
+  color: #60a5fa;
 }
