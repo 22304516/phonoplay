@@ -3,22 +3,37 @@
 import { useState } from "react";
 
 const words = [
-  { phoneme: "/θɪn/", english: "THIN" },
-  { phoneme: "/ʃɪp/", english: "SHIP" },
-  { phoneme: "/tʃɪp/", english: "CHIP" },
-  { phoneme: "/sɪŋ/", english: "SING" },
-  { phoneme: "/ðɪs/", english: "THIS" },
+  { phonemes: ["/θ/", "/ɪ/", "/n/"], phoneme: "/θɪn/", english: "THIN" },
+  { phonemes: ["/ʃ/", "/ɪ/", "/p/"], phoneme: "/ʃɪp/", english: "SHIP" },
+  { phonemes: ["/tʃ/", "/ɪ/", "/p/"], phoneme: "/tʃɪp/", english: "CHIP" },
+  { phonemes: ["/s/", "/ɪ/", "/ŋ/"], phoneme: "/sɪŋ/", english: "SING" },
+  { phonemes: ["/ð/", "/ɪ/", "/s/"], phoneme: "/ðɪs/", english: "THIS" },
 ];
 
 const grid = [
-  ["T", "H", "I", "N", "S", "H", "I"],
-  ["A", "C", "H", "I", "P", "P", "T"],
-  ["S", "I", "N", "G", "O", "E", "H"],
-  ["T", "H", "I", "S", "R", "L", "I"],
-  ["M", "A", "T", "H", "I", "N", "N"],
-  ["P", "H", "O", "N", "E", "M", "E"],
-  ["S", "H", "I", "P", "A", "B", "C"],
+  ["/θ/", "/ɪ/", "/n/", "/ʃ/", "/ɪ/", "/p/", "/tʃ/"],
+  ["/s/", "/a/", "/m/", "/ð/", "/ɪ/", "/s/", "/n/"],
+  ["/ʃ/", "/ɪ/", "/p/", "/e/", "/θ/", "/ɪ/", "/n/"],
+  ["/tʃ/", "/ɪ/", "/p/", "/s/", "/ɪ/", "/ŋ/", "/m/"],
+  ["/ð/", "/ɪ/", "/s/", "/a/", "/ʃ/", "/ɪ/", "/p/"],
+  ["/n/", "/θ/", "/ɪ/", "/s/", "/m/", "/e/", "/tʃ/"],
+  ["/s/", "/ɪ/", "/ŋ/", "/θ/", "/ɪ/", "/n/", "/a/"],
 ];
+
+const phonemeHints: Record<string, string> = {
+  "/θ/": "TH as in thin",
+  "/ð/": "TH as in this",
+  "/ʃ/": "SH as in ship",
+  "/tʃ/": "CH as in chip",
+  "/ɪ/": "I as in sit",
+  "/iː/": "EE as in see",
+  "/ŋ/": "NG as in sing",
+  "/n/": "N as in no",
+  "/s/": "S as in sun",
+  "/a/": "A as in cat",
+  "/m/": "M as in man",
+  "/e/": "E as in bed",
+};
 
 type Difficulty = "easy" | "medium" | "hard";
 
@@ -56,20 +71,24 @@ export default function WordSearch() {
   }
 
   function checkSelection() {
-    const selectedLetters = selected
+    const selectedPhonemes = selected
       .map((cell) => {
         const [row, column] = cell.split("-").map(Number);
         return grid[row][column];
       })
       .join("");
 
-    const matchingWord = words.find((word) => word.english === selectedLetters);
+    const matchingWord = words.find(
+      (word) =>
+        word.phonemes.join("") === selectedPhonemes &&
+        !foundWords.includes(word.english),
+    );
 
-    if (matchingWord && !foundWords.includes(matchingWord.english)) {
+    if (matchingWord) {
       setFoundWords([...foundWords, matchingWord.english]);
       setSelected([]);
     } else {
-      alert("That selection does not match a word.");
+      alert("That selection does not match a phoneme word.");
     }
   }
 
@@ -80,10 +99,19 @@ export default function WordSearch() {
 
   function generateHTML() {
     const selectedDifficulty = difficultySettings[difficulty];
-
     const gridSize = selectedDifficulty.gridSize;
 
-    const directionDescription = selectedDifficulty.directions;
+    // Create a phoneme-only grid for the generated activity.
+    const generatedGrid = Array.from({ length: gridSize }, (_, row) =>
+      Array.from({ length: gridSize }, (_, column) => {
+        return (
+          grid[row]?.[column] ??
+          ["/θ/", "/ɪ/", "/n/", "/ʃ/", "/s/", "/m/", "/a/", "/e/", "/ŋ/"][
+            (row + column) % 9
+          ]
+        );
+      }),
+    );
 
     const html = `
 <!DOCTYPE html>
@@ -95,6 +123,7 @@ export default function WordSearch() {
 <title>PhonoPlay Word Search Activity</title>
 
 <style>
+
 * {
   box-sizing: border-box;
 }
@@ -109,12 +138,20 @@ body {
 }
 
 main {
-  max-width: 800px;
+  max-width: 900px;
   margin: auto;
+}
+
+h1 {
+  margin-bottom: 8px;
 }
 
 .subtitle {
   color: #6b7280;
+}
+
+.info {
+  margin: 15px 0;
 }
 
 .word-list {
@@ -140,23 +177,29 @@ main {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(${gridSize}, 55px);
-  gap: 5px;
-  justify-content: center;
+  grid-template-columns: repeat(${gridSize}, minmax(0, 1fr));
+  gap: 6px;
+  width: min(90vw, 650px);
   margin: 30px auto;
 }
 
 .cell {
-  width: 55px;
-  height: 55px;
+  aspect-ratio: 1;
+  width: 100%;
+  min-width: 0;
+  padding: 4px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border: 1px solid #d1d5db;
-  border-radius: 5px;
+  border-radius: 6px;
   background: white;
-  font-size: 16px;
+
+  font-size: clamp(12px, 2.5vw, 18px);
   font-weight: 600;
+
   cursor: pointer;
 }
 
@@ -179,10 +222,13 @@ main {
 button {
   min-height: 44px;
   padding: 10px 16px;
+
   border: 1px solid #d1d5db;
   border-radius: 6px;
+
   background: white;
   cursor: pointer;
+
   font-weight: 600;
 }
 
@@ -201,8 +247,9 @@ button:hover {
 }
 
 .result {
-  margin-top: 20px;
+  margin: 20px auto;
   padding: 15px;
+  max-width: 600px;
   border-radius: 8px;
   background: #dcfce7;
 }
@@ -212,18 +259,15 @@ button:hover {
   color: #6b7280;
 }
 
-@media (max-width: 600px) {
-.grid {
-  grid-template-columns: repeat(${gridSize}, 40px);
+@media (max-width: 500px) {
+
+  .grid {
     gap: 4px;
+    width: 95vw;
   }
 
-  .cell {
-    width: 40px;
-    height: 40px;
-    font-size: 13px;
-  }
 }
+
 </style>
 </head>
 
@@ -237,6 +281,8 @@ button:hover {
 Find the phoneme-based words hidden in the grid.
 </p>
 
+<div class="info">
+
 <p>
 Difficulty:
 <strong>${selectedDifficulty.label}</strong>
@@ -244,13 +290,15 @@ Difficulty:
 
 <p>
 Grid:
-<strong>${gridSize}×${gridSize}</strong>
+<strong>${gridSize} × ${gridSize}</strong>
 </p>
 
 <p>
 Directions:
-<strong>${directionDescription}</strong>
+<strong>${selectedDifficulty.directions}</strong>
 </p>
+
+</div>
 
 <div
   id="wordList"
@@ -260,7 +308,7 @@ Directions:
 <div
   id="grid"
   class="grid"
-  aria-label="Word search grid">
+  aria-label="Phoneme word search grid">
 </div>
 
 <div class="controls">
@@ -286,59 +334,16 @@ Directions:
 </div>
 
 <p class="hint">
-Select the letters belonging to a phoneme word,
-then choose Check Selection.
+Select the phonemes belonging to a word, then choose Check Selection.
 </p>
 
 </main>
 
 <script>
 
-const words = [
-  {
-    phoneme: "/θɪn/",
-    english: "THIN"
-  },
-  {
-    phoneme: "/ʃɪp/",
-    english: "SHIP"
-  },
-  {
-    phoneme: "/tʃɪp/",
-    english: "CHIP"
-  },
-  {
-    phoneme: "/sɪŋ/",
-    english: "SING"
-  },
-  {
-    phoneme: "/ðɪs/",
-    english: "THIS"
-  }
-];
+const words = ${JSON.stringify(words)};
 
-const baseGrid = [
-  ["T", "H", "I", "N", "S", "H", "I"],
-  ["A", "C", "H", "I", "P", "P", "T"],
-  ["S", "I", "N", "G", "O", "E", "H"],
-  ["T", "H", "I", "S", "R", "L", "I"],
-  ["M", "A", "T", "H", "I", "N", "N"],
-  ["P", "H", "O", "N", "E", "M", "E"],
-  ["S", "H", "I", "P", "A", "B", "C"]
-];
-
-const gridData = Array.from(
-  { length: ${gridSize} },
-  (_, row) =>
-    Array.from(
-      { length: ${gridSize} },
-      (_, column) =>
-        baseGrid[row]?.[column] ??
-        String.fromCharCode(
-          65 + ((row + column) % 26)
-        )
-    )
-);
+const gridData = ${JSON.stringify(generatedGrid)};
 
 let selected = [];
 
@@ -373,21 +378,21 @@ function renderWords() {
 
 function renderGrid() {
 
-  const grid =
+  const container =
     document.getElementById("grid");
 
-  grid.innerHTML = "";
+  container.innerHTML = "";
 
   gridData.forEach((row, rowIndex) => {
 
-    row.forEach((letter, columnIndex) => {
+    row.forEach((phoneme, columnIndex) => {
 
       const button =
         document.createElement("button");
 
       button.className = "cell";
 
-      button.textContent = letter;
+      button.textContent = phoneme;
 
       button.setAttribute(
         "aria-label",
@@ -395,37 +400,31 @@ function renderGrid() {
         (rowIndex + 1) +
         ", Column " +
         (columnIndex + 1) +
-        ", letter " +
-        letter
+        ", phoneme " +
+        phoneme
       );
+
+      const isSelected =
+        selected.some(
+          cell =>
+            cell.row === rowIndex &&
+            cell.column === columnIndex
+        );
 
       button.setAttribute(
         "aria-pressed",
-        selected.some(
-          cell =>
-            cell.row === rowIndex &&
-            cell.column === columnIndex
-        )
+        isSelected
       );
 
-      const selectedCell =
-        selected.some(
-          cell =>
-            cell.row === rowIndex &&
-            cell.column === columnIndex
-        );
-
-      if (selectedCell) {
+      if (isSelected) {
         button.classList.add("selected");
       }
 
-      button.onclick = () =>
-        toggleCell(
-          rowIndex,
-          columnIndex
-        );
+      button.onclick = function() {
+        toggleCell(rowIndex, columnIndex);
+      };
 
-      grid.appendChild(button);
+      container.appendChild(button);
 
     });
 
@@ -449,8 +448,8 @@ function toggleCell(row, column) {
   } else {
 
     selected.push({
-      row,
-      column
+      row: row,
+      column: column
     });
 
   }
@@ -461,24 +460,20 @@ function toggleCell(row, column) {
 
 function checkSelection() {
 
-  const letters =
-    selected
-      .map(
-        cell =>
-          gridData[cell.row][cell.column]
-      )
-      .join("");
+  const selectedPhonemes =
+    selected.map(
+      cell =>
+        gridData[cell.row][cell.column]
+    );
 
-  const normalised =
-    letters.toUpperCase();
+  const selectedString =
+    selectedPhonemes.join("");
 
   const wordIndex =
     words.findIndex(
-      word =>
-        word.english === normalised &&
-        !foundWords.includes(
-          words.indexOf(word)
-        )
+      (word, index) =>
+        word.phonemes.join("") === selectedString &&
+        !foundWords.includes(index)
     );
 
   const result =
@@ -558,7 +553,7 @@ renderGrid();
 
     URL.revokeObjectURL(url);
   }
-
+  
   return (
     <div className="word-search-page">
       <section className="page-header">
@@ -660,10 +655,11 @@ renderGrid();
                     key={cell}
                     className={`search-cell ${isSelected ? "selected" : ""}`}
                     aria-pressed={isSelected}
+                    title={phonemeHints[letter] || letter}
                     onClick={() => selectCell(rowIndex, columnIndex)}
                     aria-label={`Row ${rowIndex + 1}, Column ${
                       columnIndex + 1
-                    }, letter ${letter}`}
+                    }, ${letter}, ${phonemeHints[letter] || "phoneme"}`}
                   >
                     {letter}
                   </button>
