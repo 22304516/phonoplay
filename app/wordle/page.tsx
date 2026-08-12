@@ -86,15 +86,15 @@ export default function Wordle() {
     setWon(false);
   }
 
-  function generateHTML() {
-    const html = `
+function generateHTML() {
+  const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PhonoPlay Wordle</title>
+<title>PhonoPlay Wordle Activity</title>
 
 <style>
 * {
@@ -102,15 +102,21 @@ export default function Wordle() {
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background: #f5f7fa;
+  margin: 0;
+  padding: 30px 15px;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f8fafc;
   color: #111827;
   text-align: center;
-  padding: 30px 15px;
+}
+
+main {
+  max-width: 700px;
+  margin: auto;
 }
 
 h1 {
-  margin-bottom: 5px;
+  margin-bottom: 0.5rem;
 }
 
 .subtitle {
@@ -131,16 +137,16 @@ h1 {
 }
 
 .tile {
-  width: 60px;
+  width: 70px;
   height: 60px;
   border: 2px solid #d1d5db;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: white;
   font-size: 18px;
   font-weight: bold;
-  background: white;
-  border-radius: 4px;
 }
 
 .tile.correct {
@@ -162,46 +168,61 @@ h1 {
 }
 
 .keyboard {
-  max-width: 650px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 600px;
   margin: auto;
 }
 
-.keyboard button {
-  padding: 12px;
-  margin: 4px;
-  cursor: pointer;
+button {
+  min-width: 60px;
+  min-height: 48px;
+  padding: 10px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   background: white;
+  cursor: pointer;
   font-size: 16px;
 }
 
-.keyboard button:hover {
-  background: #e5e7eb;
+button:hover {
+  background: #f3f4f6;
 }
 
-.control-button {
-  background: #2563eb !important;
-  color: white;
-  border-color: #2563eb !important;
+.controls {
+  margin-top: 10px;
 }
 
-#result {
-  margin-top: 20px;
-  font-size: 18px;
-  font-weight: bold;
+.result {
+  margin-top: 25px;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.success {
+  background: #dcfce7;
+}
+
+.failure {
+  background: #f3f4f6;
 }
 
 .hint {
+  margin-top: 20px;
   color: #6b7280;
-  margin-top: 15px;
 }
 
 @media (max-width: 500px) {
   .tile {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 55px;
     font-size: 15px;
+  }
+
+  button {
+    min-width: 55px;
   }
 }
 </style>
@@ -209,29 +230,86 @@ h1 {
 
 <body>
 
+<main>
+
 <h1>PhonoPlay Wordle</h1>
 
 <p class="subtitle">
 Guess the phoneme-based word.
 </p>
 
-<div class="board" id="board"></div>
+<div
+  id="board"
+  class="board"
+  aria-label="Wordle game board">
+</div>
 
 <div class="keyboard">
 
-<button title="/θ/ = TH as in thin" onclick="add('/θ/')">/θ/</button>
-<button title="/ð/ = TH as in this" onclick="add('/ð/')">/ð/</button>
-<button title="/ʃ/ = SH as in ship" onclick="add('/ʃ/')">/ʃ/</button>
-<button title="/tʃ/ = CH as in chip" onclick="add('/tʃ/')">/tʃ/</button>
-<button title="/ɪ/ = I as in sit" onclick="add('/ɪ/')">/ɪ/</button>
-<button title="/iː/ = EE as in see" onclick="add('/iː/')">/iː/</button>
-<button title="/ŋ/ = NG as in sing" onclick="add('/ŋ/')">/ŋ/</button>
+<button
+  onclick="addPhoneme('/θ/')"
+  title="/θ/ = TH as in thin"
+>
+/θ/
+</button>
 
-<br>
+<button
+  onclick="addPhoneme('/ð/')"
+  title="/ð/ = TH as in this"
+>
+/ð/
+</button>
 
-<button onclick="removeLast()">Delete</button>
-<button class="control-button" onclick="check()">Enter</button>
-<button onclick="reset()">Reset</button>
+<button
+  onclick="addPhoneme('/ʃ/')"
+  title="/ʃ/ = SH as in ship"
+>
+/ʃ/
+</button>
+
+<button
+  onclick="addPhoneme('/tʃ/')"
+  title="/tʃ/ = CH as in chip"
+>
+/tʃ/
+</button>
+
+<button
+  onclick="addPhoneme('/ɪ/')"
+  title="/ɪ/ = I as in sit"
+>
+/ɪ/
+</button>
+
+<button
+  onclick="addPhoneme('/iː/')"
+  title="/iː/ = EE as in see"
+>
+/iː/
+</button>
+
+<button
+  onclick="addPhoneme('/ŋ/')"
+  title="/ŋ/ = NG as in sing"
+>
+/ŋ/
+</button>
+
+</div>
+
+<div class="controls">
+
+<button onclick="deletePhoneme()">
+Delete
+</button>
+
+<button onclick="checkAnswer()">
+Enter
+</button>
+
+<button onclick="resetGame()">
+Reset
+</button>
 
 </div>
 
@@ -239,49 +317,151 @@ Guess the phoneme-based word.
 Hover over a phoneme to see its English equivalent.
 </p>
 
-<p id="result"></p>
+<div id="result"></div>
+
+</main>
 
 <script>
 
 const target = ["/θ/", "/ɪ/", "/ŋ/"];
 
 let current = [];
+
 let guesses = [];
 
-function createBoard() {
+const maxAttempts = 6;
 
-  const board = document.getElementById("board");
+function addPhoneme(phoneme) {
+
+  if (current.length >= 3) {
+    return;
+  }
+
+  current.push(phoneme);
+
+  render();
+
+}
+
+function deletePhoneme() {
+
+  current.pop();
+
+  render();
+
+}
+
+function checkAnswer() {
+
+  if (current.length !== 3) {
+
+    showResult(
+      "Please enter three phonemes.",
+      "failure"
+    );
+
+    return;
+
+  }
+
+  const statuses = current.map((phoneme, index) => {
+
+    if (phoneme === target[index]) {
+      return "correct";
+    }
+
+    if (target.includes(phoneme)) {
+      return "present";
+    }
+
+    return "incorrect";
+
+  });
+
+  guesses.push({
+    phonemes: [...current],
+    statuses
+  });
+
+  const correct =
+    statuses.every(status => status === "correct");
+
+  current = [];
+
+  render();
+
+  if (correct) {
+
+    showResult(
+      "Correct! /θɪŋ/ → THING",
+      "success"
+    );
+
+    disableKeyboard();
+
+    return;
+
+  }
+
+  if (guesses.length >= maxAttempts) {
+
+    showResult(
+      "Activity complete. The answer was /θɪŋ/ → THING.",
+      "failure"
+    );
+
+    disableKeyboard();
+
+  }
+
+}
+
+function render() {
+
+  const board =
+    document.getElementById("board");
 
   board.innerHTML = "";
 
-  for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
+  for (
+    let rowIndex = 0;
+    rowIndex < maxAttempts;
+    rowIndex++
+  ) {
 
-    const row = document.createElement("div");
+    const row =
+      document.createElement("div");
 
     row.className = "row";
 
-    for (let columnIndex = 0; columnIndex < 3; columnIndex++) {
+    const guess = guesses[rowIndex];
 
-      const tile = document.createElement("div");
+    for (
+      let tileIndex = 0;
+      tileIndex < 3;
+      tileIndex++
+    ) {
+
+      const tile =
+        document.createElement("div");
 
       tile.className = "tile";
 
-      if (guesses[rowIndex]) {
-
-        const phoneme = guesses[rowIndex].phonemes[columnIndex];
-
-        tile.textContent = phoneme;
-
-        tile.classList.add(
-          guesses[rowIndex].statuses[columnIndex]
-        );
-
-      }
-
-      else if (rowIndex === guesses.length) {
+      if (guess) {
 
         tile.textContent =
-          current[columnIndex] || "";
+          guess.phonemes[tileIndex];
+
+        tile.classList.add(
+          guess.statuses[tileIndex]
+        );
+
+      } else if (
+        rowIndex === guesses.length
+      ) {
+
+        tile.textContent =
+          current[tileIndex] || "";
 
       }
 
@@ -295,111 +475,58 @@ function createBoard() {
 
 }
 
-function add(phoneme) {
+function showResult(message, type) {
 
-  if (current.length < 3 && guesses.length < 6) {
+  const result =
+    document.getElementById("result");
 
-    current.push(phoneme);
+  result.textContent = message;
 
-    createBoard();
-
-  }
-
-}
-
-function removeLast() {
-
-  current.pop();
-
-  createBoard();
+  result.className =
+    "result " + type;
 
 }
 
-function check() {
-
-  const result = document.getElementById("result");
-
-  if (current.length !== 3) {
-
-    result.textContent =
-      "Please enter three phonemes.";
-
-    return;
-
-  }
-
-  const statuses = [];
-
-  for (let i = 0; i < target.length; i++) {
-
-    if (current[i] === target[i]) {
-
-      statuses.push("correct");
-
-    }
-
-    else if (target.includes(current[i])) {
-
-      statuses.push("present");
-
-    }
-
-    else {
-
-      statuses.push("incorrect");
-
-    }
-
-  }
-
-  guesses.push({
-    phonemes: [...current],
-    statuses: statuses
-  });
-
-  const correct =
-    statuses.every(status => status === "correct");
-
-  if (correct) {
-
-    result.innerHTML =
-      "Correct! /θɪŋ/ → <strong>THING</strong>";
-
-  }
-
-  else if (guesses.length >= 6) {
-
-    result.innerHTML =
-      "Activity complete. The answer was /θɪŋ/ → <strong>THING</strong>";
-
-  }
-
-  else {
-
-    result.textContent =
-      "Not quite. Try again!";
-
-  }
-
-  current = [];
-
-  createBoard();
-
-}
-
-function reset() {
+function resetGame() {
 
   current = [];
 
   guesses = [];
 
-  document.getElementById("result").textContent = "";
+  const result =
+    document.getElementById("result");
 
-  createBoard();
+  result.textContent = "";
+
+  result.className = "result";
+
+  enableKeyboard();
+
+  render();
 
 }
 
-createBoard();
+function disableKeyboard() {
+
+  document
+    .querySelectorAll(".keyboard button")
+    .forEach(button => {
+      button.disabled = true;
+    });
+
+}
+
+function enableKeyboard() {
+
+  document
+    .querySelectorAll(".keyboard button")
+    .forEach(button => {
+      button.disabled = false;
+    });
+
+}
+
+render();
 
 </script>
 
@@ -407,16 +534,26 @@ createBoard();
 </html>
 `;
 
-    const blob = new Blob([html], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
+  const blob = new Blob(
+    [html],
+    { type: "text/html" }
+  );
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "phonoplay-wordle.html";
-    link.click();
+  const url =
+    URL.createObjectURL(blob);
 
-    URL.revokeObjectURL(url);
-  }
+  const link =
+    document.createElement("a");
+
+  link.href = url;
+
+  link.download =
+    "phonoplay-wordle.html";
+
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
 
   return (
     <div className="wordle-page">
