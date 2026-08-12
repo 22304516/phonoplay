@@ -12,33 +12,27 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-        <div className="navbar-brand">
+      <div className="navbar-brand">
         <Link href="/" onClick={closeMenu}>
-            PhonoPlay
+          PhonoPlay
         </Link>
 
         <span>Assessment 1</span>
-        </div>
+      </div>
 
-        <button
+      <button
         className="menu-button"
         onClick={() => setMenuOpen(!menuOpen)}
-        aria-label={
-            menuOpen
-            ? "Close navigation menu"
-            : "Open navigation menu"
-        }
+        aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
         aria-expanded={menuOpen}
         aria-controls="navigation-menu"
-        >
+      >
         {menuOpen ? "✕" : "☰"}
-        </button>
+      </button>
 
       <div
         id="navigation-menu"
-        className={`navigation-links ${
-          menuOpen ? "navigation-open" : ""
-        }`}
+        className={`navigation-links ${menuOpen ? "navigation-open" : ""}`}
       >
         <Link href="/" onClick={closeMenu}>
           Home

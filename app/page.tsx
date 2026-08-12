@@ -14,8 +14,8 @@ export default function Home() {
           <h2>Phoneme Activity Builder</h2>
 
           <p className="hero-description">
-            Create interactive phoneme-based classroom activities
-            designed for Speech Pathology teachers and students.
+            Create interactive phoneme-based classroom activities designed for
+            Speech Pathology teachers and students.
           </p>
 
           <div className="hero-actions">
@@ -35,8 +35,8 @@ export default function Home() {
           <h2>Choose an Activity</h2>
 
           <p>
-            Select an activity to configure and preview your
-            phoneme-based classroom resource.
+            Select an activity to configure and preview your phoneme-based
+            classroom resource.
           </p>
         </div>
 
@@ -47,8 +47,8 @@ export default function Home() {
             <h3>Phoneme Wordle</h3>
 
             <p>
-              Create a Wordle-style guessing activity using
-              phonemes instead of conventional spelling.
+              Create a Wordle-style guessing activity using phonemes instead of
+              conventional spelling.
             </p>
 
             <ul>
@@ -57,10 +57,7 @@ export default function Home() {
               <li>English equivalence hints</li>
             </ul>
 
-            <Link
-              href="/wordle"
-              className="card-button"
-            >
+            <Link href="/wordle" className="card-button">
               Open Wordle Builder
             </Link>
           </article>
@@ -71,8 +68,8 @@ export default function Home() {
             <h3>Phoneme Word Search</h3>
 
             <p>
-              Build a word search activity that helps students
-              connect phoneme representations with English words.
+              Build a word search activity that helps students connect phoneme
+              representations with English words.
             </p>
 
             <ul>
@@ -81,10 +78,7 @@ export default function Home() {
               <li>English word equivalents</li>
             </ul>
 
-            <Link
-              href="/word-search"
-              className="card-button"
-            >
+            <Link href="/word-search" className="card-button">
               Open Word Search Builder
             </Link>
           </article>
@@ -95,9 +89,9 @@ export default function Home() {
         <h2>Designed for Speech Pathology Education</h2>
 
         <p>
-          PhonoPlay provides teachers with a simple interface for
-          creating classroom activities focused on phoneme
-          recognition and literacy skills.
+          PhonoPlay provides teachers with a simple interface for creating
+          classroom activities focused on phoneme recognition and literacy
+          skills.
         </p>
 
         <Link href="/about" className="text-link">

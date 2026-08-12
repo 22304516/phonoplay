@@ -6,9 +6,7 @@ export default function Settings() {
       <section className="page-header">
         <h1>Settings</h1>
 
-        <p>
-          Customise the PhonoPlay interface to suit your preferences.
-        </p>
+        <p>Customise the PhonoPlay interface to suit your preferences.</p>
       </section>
 
       <section className="settings-card">
@@ -19,8 +17,8 @@ export default function Settings() {
         <h2>Layout</h2>
 
         <p>
-          Layout preferences will be introduced in a later version
-          of the application.
+          Layout preferences will be introduced in a later version of the
+          application.
         </p>
       </section>
     </div>

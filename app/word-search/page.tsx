@@ -20,9 +20,30 @@ const grid = [
   ["S", "H", "I", "P", "A", "B", "C"],
 ];
 
+type Difficulty = "easy" | "medium" | "hard";
+
+const difficultySettings = {
+  easy: {
+    label: "Easy",
+    gridSize: 7,
+    directions: "Horizontal",
+  },
+  medium: {
+    label: "Medium",
+    gridSize: 8,
+    directions: "Horizontal",
+  },
+  hard: {
+    label: "Hard",
+    gridSize: 9,
+    directions: "Horizontal",
+  },
+};
+
 export default function WordSearch() {
   const [selected, setSelected] = useState<string[]>([]);
   const [foundWords, setFoundWords] = useState<string[]>([]);
+  const [difficulty, setDifficulty] = useState<Difficulty>("easy");
 
   function selectCell(row: number, column: number) {
     const cell = `${row}-${column}`;
@@ -42,9 +63,7 @@ export default function WordSearch() {
       })
       .join("");
 
-    const matchingWord = words.find(
-      (word) => word.english === selectedLetters
-    );
+    const matchingWord = words.find((word) => word.english === selectedLetters);
 
     if (matchingWord && !foundWords.includes(matchingWord.english)) {
       setFoundWords([...foundWords, matchingWord.english]);
@@ -59,8 +78,14 @@ export default function WordSearch() {
     setFoundWords([]);
   }
 
-function generateHTML() {
-  const html = `
+  function generateHTML() {
+    const selectedDifficulty = difficultySettings[difficulty];
+
+    const gridSize = selectedDifficulty.gridSize;
+
+    const directionDescription = selectedDifficulty.directions;
+
+    const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -115,7 +140,7 @@ main {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(7, 55px);
+  grid-template-columns: repeat(${gridSize}, 55px);
   gap: 5px;
   justify-content: center;
   margin: 30px auto;
@@ -188,8 +213,8 @@ button:hover {
 }
 
 @media (max-width: 600px) {
-  .grid {
-    grid-template-columns: repeat(7, 40px);
+.grid {
+  grid-template-columns: repeat(${gridSize}, 40px);
     gap: 4px;
   }
 
@@ -210,6 +235,21 @@ button:hover {
 
 <p class="subtitle">
 Find the phoneme-based words hidden in the grid.
+</p>
+
+<p>
+Difficulty:
+<strong>${selectedDifficulty.label}</strong>
+</p>
+
+<p>
+Grid:
+<strong>${gridSize}×${gridSize}</strong>
+</p>
+
+<p>
+Directions:
+<strong>${directionDescription}</strong>
 </p>
 
 <div
@@ -277,7 +317,7 @@ const words = [
   }
 ];
 
-const gridData = [
+const baseGrid = [
   ["T", "H", "I", "N", "S", "H", "I"],
   ["A", "C", "H", "I", "P", "P", "T"],
   ["S", "I", "N", "G", "O", "E", "H"],
@@ -286,6 +326,19 @@ const gridData = [
   ["P", "H", "O", "N", "E", "M", "E"],
   ["S", "H", "I", "P", "A", "B", "C"]
 ];
+
+const gridData = Array.from(
+  { length: ${gridSize} },
+  (_, row) =>
+    Array.from(
+      { length: ${gridSize} },
+      (_, column) =>
+        baseGrid[row]?.[column] ??
+        String.fromCharCode(
+          65 + ((row + column) % 26)
+        )
+    )
+);
 
 let selected = [];
 
@@ -491,44 +544,69 @@ renderGrid();
 </html>
 `;
 
-  const blob = new Blob(
-    [html],
-    { type: "text/html" }
-  );
+    const blob = new Blob([html], { type: "text/html" });
 
-  const url =
-    URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
 
-  const link =
-    document.createElement("a");
+    const link = document.createElement("a");
 
-  link.href = url;
+    link.href = url;
 
-  link.download =
-    "phonoplay-word-search.html";
+    link.download = "phonoplay-word-search.html";
 
-  link.click();
+    link.click();
 
-  URL.revokeObjectURL(url);
-}
+    URL.revokeObjectURL(url);
+  }
 
   return (
     <div className="word-search-page">
       <section className="page-header">
         <h1>Word Search Activity Builder</h1>
 
-        <p>
-          Create a phoneme-based word search activity for your classroom.
-        </p>
+        <p>Create a phoneme-based word search activity for your classroom.</p>
       </section>
 
       <section className="builder">
         <aside className="settings-panel">
+          <h2>Activity Settings</h2>
+
+          <div className="setting-group">
+            <label htmlFor="difficulty">
+              <strong>Difficulty</strong>
+            </label>
+
+            <select
+              id="difficulty"
+              value={difficulty}
+              onChange={(event) => {
+                setDifficulty(event.target.value as Difficulty);
+                resetPuzzle();
+              }}
+            >
+              <option value="easy">Easy (7×7)</option>
+
+              <option value="medium">Medium (8×8)</option>
+
+              <option value="hard">Hard (9×9)</option>
+            </select>
+          </div>
+
+          <p>
+            <strong>Grid:</strong> {difficultySettings[difficulty].gridSize}×
+            {difficultySettings[difficulty].gridSize}
+          </p>
+
+          <p>
+            <strong>Directions:</strong>{" "}
+            {difficultySettings[difficulty].directions}
+          </p>
+
           <h2>Word List</h2>
 
           <p>
-            Select the phonemes and find their English equivalents in
-            the puzzle.
+            Select the phonemes and find their English equivalents in the
+            puzzle.
           </p>
 
           <ul className="phoneme-word-list">
@@ -544,34 +622,45 @@ renderGrid();
             ))}
           </ul>
 
-          <button onClick={resetPuzzle}>
-            Reset Puzzle
-          </button>
+          <button onClick={resetPuzzle}>Reset Puzzle</button>
         </aside>
 
         <section className="preview-panel">
           <h2>Activity Preview</h2>
 
           <p>
-            Select the letters that form one of the listed words.
+            <strong>Difficulty:</strong> {difficultySettings[difficulty].label}
           </p>
 
-          <div className="word-search-grid">
-            {grid.map((row, rowIndex) =>
-              row.map((letter, columnIndex) => {
+          <p>Select the letters that form one of the listed words.</p>
+
+          <div
+            className="word-search-grid"
+            style={
+              {
+                "--grid-size": difficultySettings[difficulty].gridSize,
+              } as React.CSSProperties
+            }
+          >
+            {Array.from({
+              length: difficultySettings[difficulty].gridSize,
+            }).map((_, rowIndex) =>
+              Array.from({
+                length: difficultySettings[difficulty].gridSize,
+              }).map((_, columnIndex) => {
+                const letter =
+                  grid[rowIndex]?.[columnIndex] ??
+                  String.fromCharCode(65 + ((rowIndex + columnIndex) % 26));
+
                 const cell = `${rowIndex}-${columnIndex}`;
                 const isSelected = selected.includes(cell);
 
                 return (
                   <button
                     key={cell}
-                    className={`search-cell ${
-                        isSelected ? "selected" : ""
-                    }`}
+                    className={`search-cell ${isSelected ? "selected" : ""}`}
                     aria-pressed={isSelected}
-                    onClick={() =>
-                      selectCell(rowIndex, columnIndex)
-                    }
+                    onClick={() => selectCell(rowIndex, columnIndex)}
                     aria-label={`Row ${rowIndex + 1}, Column ${
                       columnIndex + 1
                     }, letter ${letter}`}
@@ -579,18 +668,14 @@ renderGrid();
                     {letter}
                   </button>
                 );
-              })
+              }),
             )}
           </div>
 
           <div className="word-search-controls">
-            <button onClick={checkSelection}>
-              Check Selection
-            </button>
+            <button onClick={checkSelection}>Check Selection</button>
 
-            <button onClick={resetPuzzle}>
-              Reset
-            </button>
+            <button onClick={resetPuzzle}>Reset</button>
           </div>
 
           <p className="phoneme-hint">
@@ -600,10 +685,7 @@ renderGrid();
       </section>
 
       <section className="generate-section">
-        <button
-          className="generate-button"
-          onClick={generateHTML}
-        >
+        <button className="generate-button" onClick={generateHTML}>
           Generate HTML
         </button>
       </section>

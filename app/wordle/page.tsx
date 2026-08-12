@@ -25,11 +25,32 @@ type Guess = {
   statuses: TileStatus[];
 };
 
+type Difficulty = "easy" | "medium" | "hard";
+
+const difficultySettings = {
+  easy: {
+    label: "Easy",
+    attempts: 6,
+    hints: true,
+  },
+  medium: {
+    label: "Medium",
+    attempts: 5,
+    hints: true,
+  },
+  hard: {
+    label: "Hard",
+    attempts: 4,
+    hints: false,
+  },
+};
+
 export default function Wordle() {
   const [currentGuess, setCurrentGuess] = useState<string[]>([]);
   const [guesses, setGuesses] = useState<Guess[]>([]);
   const [gameOver, setGameOver] = useState(false);
   const [won, setWon] = useState(false);
+  const [difficulty, setDifficulty] = useState<Difficulty>("easy");
 
   function addPhoneme(phoneme: string) {
     if (gameOver || currentGuess.length >= targetWord.length) {
@@ -72,7 +93,7 @@ export default function Wordle() {
     if (correct) {
       setWon(true);
       setGameOver(true);
-    } else if (guesses.length >= 5) {
+    } else if (guesses.length >= difficultySettings[difficulty].attempts - 1) {
       setGameOver(true);
     }
 
@@ -86,8 +107,14 @@ export default function Wordle() {
     setWon(false);
   }
 
-function generateHTML() {
-  const html = `
+  function generateHTML() {
+    const selectedDifficulty = difficultySettings[difficulty];
+
+    const maxAttempts = selectedDifficulty.attempts;
+
+    const hintsEnabled = selectedDifficulty.hints;
+
+    const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -238,6 +265,11 @@ button:hover {
 Guess the phoneme-based word.
 </p>
 
+<p>
+Difficulty:
+<strong>${selectedDifficulty.label}</strong>
+</p>
+
 <div
   id="board"
   class="board"
@@ -313,9 +345,15 @@ Reset
 
 </div>
 
+${
+  hintsEnabled
+    ? `
 <p class="hint">
-Hover over a phoneme to see its English equivalent.
+  Hover over a phoneme to see its English equivalent.
 </p>
+`
+    : ""
+}
 
 <div id="result"></div>
 
@@ -329,7 +367,7 @@ let current = [];
 
 let guesses = [];
 
-const maxAttempts = 6;
+const maxAttempts = ${maxAttempts};
 
 function addPhoneme(phoneme) {
 
@@ -534,26 +572,20 @@ render();
 </html>
 `;
 
-  const blob = new Blob(
-    [html],
-    { type: "text/html" }
-  );
+    const blob = new Blob([html], { type: "text/html" });
 
-  const url =
-    URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
 
-  const link =
-    document.createElement("a");
+    const link = document.createElement("a");
 
-  link.href = url;
+    link.href = url;
 
-  link.download =
-    "phonoplay-wordle.html";
+    link.download = "phonoplay-wordle.html";
 
-  link.click();
+    link.click();
 
-  URL.revokeObjectURL(url);
-}
+    URL.revokeObjectURL(url);
+  }
 
   return (
     <div className="wordle-page">
@@ -570,12 +602,38 @@ render();
         <aside className="settings-panel">
           <h2>Activity Settings</h2>
 
+          <div className="setting-group">
+            <label htmlFor="difficulty">
+              <strong>Difficulty</strong>
+            </label>
+
+            <select
+              id="difficulty"
+              value={difficulty}
+              onChange={(event) => {
+                setDifficulty(event.target.value as Difficulty);
+                resetGame();
+              }}
+            >
+              <option value="easy">Easy (6 attempts)</option>
+
+              <option value="medium">Medium (5 attempts)</option>
+
+              <option value="hard">Hard (4 attempts)</option>
+            </select>
+          </div>
+
           <p>
             <strong>Target length:</strong> 3 phonemes
           </p>
 
           <p>
-            <strong>Attempts:</strong> 6
+            <strong>Attempts:</strong> {difficultySettings[difficulty].attempts}
+          </p>
+
+          <p>
+            <strong>Hints:</strong>{" "}
+            {difficultySettings[difficulty].hints ? "Enabled" : "Disabled"}
           </p>
 
           <button onClick={resetGame}>Reset Activity</button>
@@ -584,12 +642,12 @@ render();
         <section className="preview-panel">
           <h2>Activity Preview</h2>
 
-          <p>
-            Select phonemes to build your answer.
-          </p>
+          <p>Select phonemes to build your answer.</p>
 
           <div className="wordle-board">
-            {Array.from({ length: 6 }).map((_, rowIndex) => {
+            {Array.from({
+              length: difficultySettings[difficulty].attempts,
+            }).map((_, rowIndex) => {
               const guess = guesses[rowIndex];
 
               return (
@@ -601,14 +659,10 @@ render();
                         ? currentGuess[tileIndex]
                         : "");
 
-                    const status =
-                      guess?.statuses[tileIndex] ?? "empty";
+                    const status = guess?.statuses[tileIndex] ?? "empty";
 
                     return (
-                      <div
-                        className={`phoneme-tile ${status}`}
-                        key={tileIndex}
-                      >
+                      <div className={`phoneme-tile ${status}`} key={tileIndex}>
                         {phoneme}
                       </div>
                     );
@@ -625,32 +679,25 @@ render();
                 onClick={() => addPhoneme(item.symbol)}
                 title={`${item.symbol} = ${item.english} as in ${item.example}`}
                 aria-label={`${item.symbol}, ${item.english} as in ${item.example}`}
-                >
+              >
                 <span>{item.symbol}</span>
               </button>
             ))}
 
-            <button onClick={deletePhoneme}>
-              Delete
-            </button>
+            <button onClick={deletePhoneme}>Delete</button>
 
-            <button onClick={checkAnswer}>
-              Enter
-            </button>
+            <button onClick={checkAnswer}>Enter</button>
           </div>
 
-          <div className="phoneme-hint">
-            <strong>Phoneme hints:</strong>{" "}
-            Hover over or focus a phoneme to see its English
-            equivalent and an example word.
-          </div>
+          {difficultySettings[difficulty].hints && (
+            <div className="phoneme-hint">
+              <strong>Phoneme hints:</strong> Hover over or focus a phoneme to
+              see its English equivalent and an example word.
+            </div>
+          )}
 
           {won && (
-            <div
-                className="success-message"
-                role="status"
-                aria-live="polite"
-            >
+            <div className="success-message" role="status" aria-live="polite">
               <strong>Correct!</strong>
 
               <p>
@@ -660,11 +707,7 @@ render();
           )}
 
           {gameOver && !won && (
-            <div
-                className="failure-message"
-                role="status"
-                aria-live="polite"
-            >
+            <div className="failure-message" role="status" aria-live="polite">
               <strong>Activity complete.</strong>
 
               <p>
@@ -676,10 +719,7 @@ render();
       </section>
 
       <section className="generate-section">
-        <button
-          className="generate-button"
-          onClick={generateHTML}
-        >
+        <button className="generate-button" onClick={generateHTML}>
           Generate HTML
         </button>
       </section>

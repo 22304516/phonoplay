@@ -24,19 +24,14 @@ export default function ThemeSelector() {
 
     document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
 
-    document.documentElement.setAttribute(
-      "data-theme",
-      newTheme
-    );
+    document.documentElement.setAttribute("data-theme", newTheme);
   }
 
   return (
     <div className="theme-selector">
       <h2>Appearance</h2>
 
-      <p>
-        Choose the appearance of the PhonoPlay interface.
-      </p>
+      <p>Choose the appearance of the PhonoPlay interface.</p>
 
       <div className="theme-options">
         <button
