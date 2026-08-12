@@ -2,17 +2,16 @@
   box-sizing: border-box;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
+  margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: #f5f7fa;
-  color: #1f2937;
+  background: #f8fafc;
+  color: #111827;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 a {
@@ -20,13 +19,40 @@ a {
   text-decoration: none;
 }
 
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+p,
+li {
+  line-height: 1.6;
+}
+
+/* =========================
+   NAVIGATION
+   ========================= */
+
 .navbar {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
   background: white;
   border-bottom: 1px solid #e5e7eb;
+  z-index: 20;
 }
 
 .navbar-brand {
@@ -62,97 +88,194 @@ a {
   border: none;
   background: transparent;
   font-size: 1.7rem;
-  cursor: pointer;
   padding: 0.25rem;
 }
 
-main {
-  min-height: calc(100vh - 140px);
-}
-
-footer {
-  padding: 1.5rem 2rem;
-  background: white;
-  border-top: 1px solid #e5e7eb;
-  text-align: center;
-  color: #6b7280;
-}
-
-footer p {
-  margin: 0.25rem;
-}
-
-@media (max-width: 700px) {
-  .navbar {
-    position: relative;
-    padding: 1rem;
-  }
-
-  .menu-button {
-    display: block;
-  }
-
-  .navigation-links {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    background: white;
-    border-bottom: 1px solid #e5e7eb;
-    z-index: 10;
-  }
-
-  .navigation-links.navigation-open {
-    display: flex;
-  }
-
-  .navigation-links a {
-    padding: 1rem;
-    text-align: center;
-    border-top: 1px solid #e5e7eb;
-  }
-
-  html[data-theme="dark"] .navigation-links {
-    background: #1f2937;
-    border-color: #374151;
-  }
-
-  html[data-theme="dark"] .navigation-links a {
-    border-color: #374151;
-  }
-}
-
-html[data-theme="dark"] a:focus-visible,
-html[data-theme="dark"] button:focus-visible {
-  outline-color: #60a5fa;
-}
-
-.wordle-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 3rem 2rem;
-}
+/* =========================
+   GENERAL
+   ========================= */
 
 .page-header {
+  text-align: center;
   margin-bottom: 2rem;
 }
 
 .page-header h1 {
   margin-bottom: 0.5rem;
+  font-size: 2.4rem;
 }
 
 .page-header p {
   color: #6b7280;
 }
 
+.assessment-label {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* =========================
+   BUTTONS
+   ========================= */
+
+.primary-button,
+.secondary-button,
+.card-button,
+.generate-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+}
+
+.primary-button,
+.generate-button,
+.card-button {
+  background: #2563eb;
+  color: white;
+}
+
+.primary-button:hover,
+.generate-button:hover,
+.card-button:hover {
+  background: #1d4ed8;
+}
+
+.secondary-button {
+  background: white;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.secondary-button:hover {
+  background: #eff6ff;
+}
+
+/* =========================
+   HOME
+   ========================= */
+
+.home-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-section {
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.hero-section h1 {
+  margin: 0;
+  font-size: 3.5rem;
+}
+
+.hero-section h2 {
+  margin-top: 0.5rem;
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+
+.hero-description {
+  max-width: 650px;
+  margin: 1.5rem auto;
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.activities-section {
+  padding: 3rem 2rem;
+}
+
+.section-heading {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section-heading p {
+  color: #6b7280;
+}
+
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.activity-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
+}
+
+.activity-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.activity-card h3 {
+  margin-top: 1.25rem;
+}
+
+.activity-card p {
+  color: #6b7280;
+}
+
+.activity-card ul {
+  padding-left: 1.25rem;
+}
+
+.information-section {
+  margin: 2rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.information-section p {
+  max-width: 700px;
+  margin: 1rem auto;
+  color: #6b7280;
+}
+
+/* =========================
+   BUILDER LAYOUT
+   ========================= */
+
 .builder {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 280px 1fr;
   gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .settings-panel,
@@ -160,115 +283,28 @@ html[data-theme="dark"] button:focus-visible {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
 }
 
-.settings-panel {
-  height: fit-content;
-}
-
-.settings-panel label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-.settings-panel select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: white;
-}
-
-.wordle-board {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin: 2rem 0;
-}
-
-.phoneme-tile {
-  width: 70px;
-  height: 70px;
-  border: 2px solid #d1d5db;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.4rem;
-  font-weight: 700;
-}
-
-.phoneme-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.phoneme-buttons button,
-.wordle-controls button {
-  padding: 0.75rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: white;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.phoneme-buttons button:hover,
-.wordle-controls button:hover {
-  background: #f3f4f6;
-}
-
-.wordle-controls {
-  display: flex;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
-
-.hint {
-  text-align: center;
-  color: #6b7280;
-  margin-top: 1.5rem;
+.preview-panel {
+  min-width: 0;
 }
 
 .generate-section {
   display: flex;
   justify-content: center;
-  margin-top: 2rem;
+  margin: 2rem 0 4rem;
 }
 
-.generate-button {
-  padding: 0.9rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  background: #2563eb;
-  color: white;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-}
+/* =========================
+   WORDLE
+   ========================= */
 
-.generate-button:hover {
-  background: #1d4ed8;
-}
-
-@media (max-width: 700px) {
-  .wordle-page {
-    padding: 2rem 1rem;
-  }
-
-  .builder {
-    grid-template-columns: 1fr;
-  }
-
-  .phoneme-tile {
-    width: 60px;
-    height: 60px;
-  }
+.wordle-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
 }
 
 .wordle-board {
@@ -282,6 +318,18 @@ html[data-theme="dark"] button:focus-visible {
 .wordle-row {
   display: flex;
   gap: 0.5rem;
+}
+
+.phoneme-tile {
+  width: 70px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  font-weight: 700;
 }
 
 .phoneme-tile.correct {
@@ -318,12 +366,16 @@ html[data-theme="dark"] button:focus-visible {
   border: 1px solid #d1d5db;
   border-radius: 6px;
   background: white;
-  cursor: pointer;
-  font-size: 1rem;
 }
 
 .phoneme-keyboard button:hover {
   background: #f3f4f6;
+}
+
+.phoneme-hint {
+  margin-top: 1rem;
+  text-align: center;
+  color: #6b7280;
 }
 
 .success-message,
@@ -342,11 +394,9 @@ html[data-theme="dark"] button:focus-visible {
   background: #f3f4f6;
 }
 
-.phoneme-hint {
-  margin-top: 1rem;
-  text-align: center;
-  color: #6b7280;
-}
+/* =========================
+   WORD SEARCH
+   ========================= */
 
 .word-search-page {
   max-width: 1200px;
@@ -383,7 +433,6 @@ html[data-theme="dark"] button:focus-visible {
   background: white;
   font-size: 1.1rem;
   font-weight: 600;
-  cursor: pointer;
 }
 
 .search-cell:hover {
@@ -403,300 +452,20 @@ html[data-theme="dark"] button:focus-visible {
 
 .word-search-controls button,
 .settings-panel button {
+  min-height: 44px;
   padding: 0.75rem 1rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   background: white;
-  cursor: pointer;
 }
 
-.word-search-controls button:hover,
-.settings-panel button:hover {
-  background: #f3f4f6;
-}
-
-@media (max-width: 600px) {
-  .word-search-page {
-    padding: 2rem 1rem;
-  }
-
-  .word-search-grid {
-    grid-template-columns: repeat(7, 40px);
-    gap: 0.25rem;
-  }
-
-  .search-cell {
-    width: 40px;
-    height: 40px;
-    font-size: 0.9rem;
-  }
-}
-
-.settings-page {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 3rem 2rem;
-}
-
-.settings-card {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.theme-options {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.theme-options button {
-  padding: 0.75rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: white;
-  cursor: pointer;
-}
-
-.theme-options button:hover {
-  background: #f3f4f6;
-}
-
-.theme-options button.active {
-  border-color: #2563eb;
-  background: #2563eb;
-  color: white;
-}
-
-.setting-status {
-  margin-top: 1rem;
+.phoneme-hint {
   color: #6b7280;
 }
 
-html[data-theme="dark"] body {
-  background: #111827;
-  color: #f9fafb;
-}
-
-html[data-theme="dark"] nav,
-html[data-theme="dark"] footer,
-html[data-theme="dark"] .settings-card,
-html[data-theme="dark"] .settings-panel,
-html[data-theme="dark"] .preview-panel {
-  background: #1f2937;
-  border-color: #374151;
-}
-
-html[data-theme="dark"] nav a:hover {
-  color: #60a5fa;
-}
-
-html[data-theme="dark"] .page-header p,
-html[data-theme="dark"] .phoneme-hint,
-html[data-theme="dark"] .setting-status {
-  color: #9ca3af;
-}
-
-html[data-theme="dark"] .phoneme-keyboard button,
-html[data-theme="dark"] .wordle-controls button,
-html[data-theme="dark"] .settings-panel select,
-html[data-theme="dark"] .search-cell,
-html[data-theme="dark"] .word-search-controls button,
-html[data-theme="dark"] .settings-panel button,
-html[data-theme="dark"] .theme-options button {
-  background: #374151;
-  color: #f9fafb;
-  border-color: #4b5563;
-}
-
-.home-page {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.hero-section {
-  padding: 5rem 2rem;
-  text-align: center;
-}
-
-.hero-content {
-  max-width: 750px;
-  margin: 0 auto;
-}
-
-.assessment-label {
-  color: #2563eb;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.hero-section h1 {
-  margin: 0;
-  font-size: 3.5rem;
-}
-
-.hero-section h2 {
-  margin-top: 0.5rem;
-  font-size: 1.8rem;
-  font-weight: 500;
-}
-
-.hero-description {
-  max-width: 650px;
-  margin: 1.5rem auto;
-  color: #6b7280;
-  font-size: 1.1rem;
-  line-height: 1.7;
-}
-
-.hero-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-top: 2rem;
-}
-
-.primary-button,
-.secondary-button,
-.card-button {
-  display: inline-block;
-  padding: 0.85rem 1.25rem;
-  border-radius: 8px;
-  font-weight: 600;
-}
-
-.primary-button {
-  background: #2563eb;
-  color: white;
-}
-
-.primary-button:hover {
-  background: #1d4ed8;
-}
-
-.secondary-button {
-  background: white;
-  color: #2563eb;
-  border: 1px solid #2563eb;
-}
-
-.secondary-button:hover {
-  background: #eff6ff;
-}
-
-.activities-section {
-  padding: 3rem 2rem;
-}
-
-.section-heading {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.section-heading p {
-  color: #6b7280;
-}
-
-.activity-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
-}
-
-.activity-card {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 2rem;
-}
-
-.activity-icon {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  background: #eff6ff;
-  color: #2563eb;
-  font-weight: 700;
-  font-size: 1.2rem;
-}
-
-.activity-card h3 {
-  margin-top: 1.25rem;
-  font-size: 1.4rem;
-}
-
-.activity-card p {
-  color: #6b7280;
-  line-height: 1.6;
-}
-
-.activity-card ul {
-  padding-left: 1.25rem;
-  line-height: 1.8;
-}
-
-.card-button {
-  margin-top: 1rem;
-  background: #2563eb;
-  color: white;
-}
-
-.card-button:hover {
-  background: #1d4ed8;
-}
-
-.information-section {
-  margin: 2rem;
-  padding: 3rem 2rem;
-  text-align: center;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-}
-
-.information-section p {
-  max-width: 700px;
-  margin: 1rem auto;
-  color: #6b7280;
-  line-height: 1.7;
-}
-
-.text-link {
-  color: #2563eb;
-  font-weight: 600;
-}
-
-@media (max-width: 700px) {
-  .hero-section {
-    padding: 3rem 1rem;
-  }
-
-  .hero-section h1 {
-    font-size: 2.5rem;
-  }
-
-  .hero-section h2 {
-    font-size: 1.4rem;
-  }
-
-  .activities-section {
-    padding: 2rem 1rem;
-  }
-
-  .activity-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .information-section {
-    margin: 1rem;
-  }
-}
+/* =========================
+   ABOUT
+   ========================= */
 
 .about-page {
   max-width: 1000px;
@@ -708,7 +477,6 @@ html[data-theme="dark"] .theme-options button {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
-  margin-bottom: 1.5rem;
 }
 
 .about-card {
@@ -717,19 +485,11 @@ html[data-theme="dark"] .theme-options button {
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 1.5rem;
-}
-
-.about-card h2 {
-  margin-top: 0;
-}
-
-.about-card h3 {
-  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
 }
 
 .about-card p {
   color: #6b7280;
-  line-height: 1.7;
 }
 
 .activity-description {
@@ -739,10 +499,6 @@ html[data-theme="dark"] .theme-options button {
 
 .activity-description:last-child {
   border-bottom: none;
-}
-
-.student-card p {
-  margin: 0.5rem 0;
 }
 
 .video-card {
@@ -763,90 +519,121 @@ html[data-theme="dark"] .theme-options button {
 
 .video-placeholder p {
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: 600;
   color: #374151;
+  font-weight: 600;
 }
 
-.video-placeholder span {
-  margin-top: 0.5rem;
+/* =========================
+   SETTINGS
+   ========================= */
+
+.settings-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.settings-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
+}
+
+.theme-options {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.theme-options button {
+  min-height: 44px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+}
+
+.theme-options button.active {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: white;
+}
+
+.setting-status {
   color: #6b7280;
 }
 
-@media (max-width: 700px) {
-  .about-page {
-    padding: 2rem 1rem;
-  }
+/* =========================
+   FOOTER
+   ========================= */
 
-  .about-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .about-card {
-    padding: 1.5rem;
-  }
+footer {
+  margin-top: 4rem;
+  padding: 2rem;
+  text-align: center;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  color: #6b7280;
 }
 
-/* Accessibility: clear keyboard focus */
-a:focus-visible,
-button:focus-visible {
-  outline: 3px solid #2563eb;
-  outline-offset: 3px;
-}
-
-/* Prevent text from becoming too cramped */
-p,
-li {
-  line-height: 1.6;
-}
-
-/* Make interactive controls easier to use */
-button,
-a {
-  min-height: 44px;
-}
-
-/* Dark mode text */
-html[data-theme="dark"] {
-  color-scheme: dark;
-}
+/* =========================
+   DARK MODE
+   ========================= */
 
 html[data-theme="dark"] body {
+  background: #111827;
   color: #f9fafb;
 }
 
-/* Home page */
-html[data-theme="dark"] .hero-section h1,
-html[data-theme="dark"] .hero-section h2,
-html[data-theme="dark"] .section-heading h2,
-html[data-theme="dark"] .activity-card h3,
-html[data-theme="dark"] .information-section h2 {
-  color: #f9fafb;
+html[data-theme="dark"] .navbar,
+html[data-theme="dark"] footer,
+html[data-theme="dark"] .activity-card,
+html[data-theme="dark"] .information-section,
+html[data-theme="dark"] .settings-card,
+html[data-theme="dark"] .settings-panel,
+html[data-theme="dark"] .preview-panel,
+html[data-theme="dark"] .about-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+html[data-theme="dark"] .navigation-links a:hover {
+  color: #60a5fa;
 }
 
 html[data-theme="dark"] .hero-description,
 html[data-theme="dark"] .section-heading p,
 html[data-theme="dark"] .activity-card p,
-html[data-theme="dark"] .activity-card li,
-html[data-theme="dark"] .information-section p {
-  color: #d1d5db;
+html[data-theme="dark"] .information-section p,
+html[data-theme="dark"] .page-header p,
+html[data-theme="dark"] .about-card p,
+html[data-theme="dark"] .setting-status,
+html[data-theme="dark"] .phoneme-hint {
+  color: #9ca3af;
 }
 
-/* About page */
-html[data-theme="dark"] .about-page h1,
-html[data-theme="dark"] .about-page h2,
-html[data-theme="dark"] .about-page h3 {
+html[data-theme="dark"] .phoneme-keyboard button,
+html[data-theme="dark"] .search-cell,
+html[data-theme="dark"] .word-search-controls button,
+html[data-theme="dark"] .settings-panel button,
+html[data-theme="dark"] .theme-options button,
+html[data-theme="dark"] .secondary-button {
+  background: #374151;
   color: #f9fafb;
+  border-color: #4b5563;
 }
 
-html[data-theme="dark"] .about-page p,
-html[data-theme="dark"] .about-page span {
-  color: #d1d5db;
+html[data-theme="dark"] .phoneme-tile {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
 }
 
-html[data-theme="dark"] .about-card {
-  background: #1f2937;
-  border-color: #374151;
+html[data-theme="dark"] .search-cell.selected {
+  background: #1d4ed8;
 }
 
 html[data-theme="dark"] .video-placeholder {
@@ -854,36 +641,103 @@ html[data-theme="dark"] .video-placeholder {
   border-color: #4b5563;
 }
 
-html[data-theme="dark"] .video-placeholder p {
-  color: #f9fafb;
+html[data-theme="dark"] a:focus-visible,
+html[data-theme="dark"] button:focus-visible {
+  outline-color: #60a5fa;
 }
 
-html[data-theme="dark"] .video-placeholder span {
-  color: #9ca3af;
-}
+/* =========================
+   RESPONSIVE
+   ========================= */
 
-/* Home cards */
-html[data-theme="dark"] .activity-card,
-html[data-theme="dark"] .information-section {
-  background: #1f2937;
-  border-color: #374151;
-}
+@media (max-width: 700px) {
+  .navbar {
+    padding: 1rem;
+  }
 
-/* Links */
-html[data-theme="dark"] .text-link {
-  color: #60a5fa;
-}
+  .menu-button {
+    display: block;
+  }
 
-html[data-theme="dark"] .secondary-button {
-  background: #1f2937;
-  color: #60a5fa;
-  border-color: #60a5fa;
-}
+  .navigation-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+  }
 
-html[data-theme="dark"] .secondary-button:hover {
-  background: #374151;
-}
+  .navigation-links.navigation-open {
+    display: flex;
+  }
 
-html[data-theme="dark"] .assessment-label {
-  color: #60a5fa;
+  .navigation-links a {
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  html[data-theme="dark"] .navigation-links {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  html[data-theme="dark"] .navigation-links a {
+    border-color: #374151;
+  }
+
+  .hero-section {
+    padding: 3rem 1rem;
+  }
+
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-section h2 {
+    font-size: 1.4rem;
+  }
+
+  .activities-section {
+    padding: 2rem 1rem;
+  }
+
+  .activity-grid,
+  .about-grid,
+  .builder {
+    grid-template-columns: 1fr;
+  }
+
+  .wordle-page,
+  .word-search-page,
+  .about-page,
+  .settings-page {
+    padding: 2rem 1rem;
+  }
+
+  .word-search-grid {
+    grid-template-columns: repeat(7, 40px);
+    gap: 0.25rem;
+  }
+
+  .search-cell {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .settings-panel,
+  .preview-panel,
+  .about-card {
+    padding: 1.5rem;
+  }
+
+  .information-section {
+    margin: 1rem;
+  }
 }
