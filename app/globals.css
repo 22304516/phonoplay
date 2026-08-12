@@ -614,6 +614,37 @@ li {
   color: #6b7280;
 }
 
+/* Layout preferences */
+
+html[data-layout="compact"] .settings-card,
+html[data-layout="compact"] .builder {
+  gap: 1rem;
+}
+
+html[data-layout="compact"] .page-header {
+  margin-bottom: 1rem;
+}
+
+html[data-layout="compact"] .settings-card {
+  padding: 1rem;
+}
+
+html[data-layout="comfortable"] .settings-card {
+  padding: 1.5rem;
+}
+
+/* Text size preferences */
+
+html[data-text-size="large"] {
+  font-size: 18px;
+}
+
+html[data-text-size="large"] button,
+html[data-text-size="large"] input,
+html[data-text-size="large"] select {
+  font-size: 1rem;
+}
+
 /* =========================
    FOOTER
    ========================= */

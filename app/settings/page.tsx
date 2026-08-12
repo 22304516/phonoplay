@@ -1,4 +1,5 @@
 import ThemeSelector from "../components/ThemeSelector";
+import LayoutSelector from "../components/LayoutSelector";
 
 export default function Settings() {
   return (
@@ -16,10 +17,7 @@ export default function Settings() {
       <section className="settings-card">
         <h2>Layout</h2>
 
-        <p>
-          Layout preferences will be introduced in a later version of the
-          application.
-        </p>
+        <LayoutSelector />
       </section>
     </div>
   );
