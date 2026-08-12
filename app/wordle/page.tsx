@@ -93,17 +93,28 @@ export default function Wordle() {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>PhonoPlay Wordle</title>
+
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
   background: #f5f7fa;
+  color: #111827;
   text-align: center;
-  padding: 40px 20px;
+  padding: 30px 15px;
 }
 
 h1 {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: #6b7280;
 }
 
 .board {
@@ -122,106 +133,274 @@ h1 {
 .tile {
   width: 60px;
   height: 60px;
-  border: 2px solid #ccc;
+  border: 2px solid #d1d5db;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
+  background: white;
+  border-radius: 4px;
+}
+
+.tile.correct {
+  background: #22c55e;
+  color: white;
+  border-color: #22c55e;
+}
+
+.tile.present {
+  background: #eab308;
+  color: white;
+  border-color: #eab308;
+}
+
+.tile.incorrect {
+  background: #6b7280;
+  color: white;
+  border-color: #6b7280;
 }
 
 .keyboard {
-  max-width: 600px;
+  max-width: 650px;
   margin: auto;
 }
 
-button {
+.keyboard button {
   padding: 12px;
   margin: 4px;
   cursor: pointer;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  font-size: 16px;
+}
+
+.keyboard button:hover {
+  background: #e5e7eb;
+}
+
+.control-button {
+  background: #2563eb !important;
+  color: white;
+  border-color: #2563eb !important;
+}
+
+#result {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.hint {
+  color: #6b7280;
+  margin-top: 15px;
+}
+
+@media (max-width: 500px) {
+  .tile {
+    width: 50px;
+    height: 50px;
+    font-size: 15px;
+  }
 }
 </style>
 </head>
 
 <body>
+
 <h1>PhonoPlay Wordle</h1>
-<p>Guess the phoneme-based word.</p>
+
+<p class="subtitle">
+Guess the phoneme-based word.
+</p>
 
 <div class="board" id="board"></div>
 
 <div class="keyboard">
-<button onclick="add('/θ/')">/θ/</button>
-<button onclick="add('/ð/')">/ð/</button>
-<button onclick="add('/ʃ/')">/ʃ/</button>
-<button onclick="add('/tʃ/')">/tʃ/</button>
-<button onclick="add('/ɪ/')">/ɪ/</button>
-<button onclick="add('/iː/')">/iː/</button>
-<button onclick="add('/ŋ/')">/ŋ/</button>
+
+<button title="/θ/ = TH as in thin" onclick="add('/θ/')">/θ/</button>
+<button title="/ð/ = TH as in this" onclick="add('/ð/')">/ð/</button>
+<button title="/ʃ/ = SH as in ship" onclick="add('/ʃ/')">/ʃ/</button>
+<button title="/tʃ/ = CH as in chip" onclick="add('/tʃ/')">/tʃ/</button>
+<button title="/ɪ/ = I as in sit" onclick="add('/ɪ/')">/ɪ/</button>
+<button title="/iː/ = EE as in see" onclick="add('/iː/')">/iː/</button>
+<button title="/ŋ/ = NG as in sing" onclick="add('/ŋ/')">/ŋ/</button>
+
 <br>
+
 <button onclick="removeLast()">Delete</button>
-<button onclick="check()">Check Answer</button>
+<button class="control-button" onclick="check()">Enter</button>
 <button onclick="reset()">Reset</button>
+
 </div>
+
+<p class="hint">
+Hover over a phoneme to see its English equivalent.
+</p>
 
 <p id="result"></p>
 
 <script>
+
 const target = ["/θ/", "/ɪ/", "/ŋ/"];
+
 let current = [];
+let guesses = [];
 
-function add(phoneme) {
-  if (current.length < 3) {
-    current.push(phoneme);
-    render();
-  }
-}
+function createBoard() {
 
-function removeLast() {
-  current.pop();
-  render();
-}
-
-function render() {
   const board = document.getElementById("board");
 
   board.innerHTML = "";
 
-  const row = document.createElement("div");
-  row.className = "row";
+  for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
 
-  for (let i = 0; i < 3; i++) {
-    const tile = document.createElement("div");
-    tile.className = "tile";
-    tile.textContent = current[i] || "";
-    row.appendChild(tile);
+    const row = document.createElement("div");
+
+    row.className = "row";
+
+    for (let columnIndex = 0; columnIndex < 3; columnIndex++) {
+
+      const tile = document.createElement("div");
+
+      tile.className = "tile";
+
+      if (guesses[rowIndex]) {
+
+        const phoneme = guesses[rowIndex].phonemes[columnIndex];
+
+        tile.textContent = phoneme;
+
+        tile.classList.add(
+          guesses[rowIndex].statuses[columnIndex]
+        );
+
+      }
+
+      else if (rowIndex === guesses.length) {
+
+        tile.textContent =
+          current[columnIndex] || "";
+
+      }
+
+      row.appendChild(tile);
+
+    }
+
+    board.appendChild(row);
+
   }
 
-  board.appendChild(row);
+}
+
+function add(phoneme) {
+
+  if (current.length < 3 && guesses.length < 6) {
+
+    current.push(phoneme);
+
+    createBoard();
+
+  }
+
+}
+
+function removeLast() {
+
+  current.pop();
+
+  createBoard();
+
 }
 
 function check() {
+
+  const result = document.getElementById("result");
+
   if (current.length !== 3) {
-    document.getElementById("result").textContent =
+
+    result.textContent =
       "Please enter three phonemes.";
+
     return;
+
   }
 
-  if (JSON.stringify(current) === JSON.stringify(target)) {
-    document.getElementById("result").textContent =
-      "Correct! The English equivalent is THING.";
-  } else {
-    document.getElementById("result").textContent =
-      "Not quite. Try again!";
+  const statuses = [];
+
+  for (let i = 0; i < target.length; i++) {
+
+    if (current[i] === target[i]) {
+
+      statuses.push("correct");
+
+    }
+
+    else if (target.includes(current[i])) {
+
+      statuses.push("present");
+
+    }
+
+    else {
+
+      statuses.push("incorrect");
+
+    }
+
   }
+
+  guesses.push({
+    phonemes: [...current],
+    statuses: statuses
+  });
+
+  const correct =
+    statuses.every(status => status === "correct");
+
+  if (correct) {
+
+    result.innerHTML =
+      "Correct! /θɪŋ/ → <strong>THING</strong>";
+
+  }
+
+  else if (guesses.length >= 6) {
+
+    result.innerHTML =
+      "Activity complete. The answer was /θɪŋ/ → <strong>THING</strong>";
+
+  }
+
+  else {
+
+    result.textContent =
+      "Not quite. Try again!";
+
+  }
+
+  current = [];
+
+  createBoard();
+
 }
 
 function reset() {
+
   current = [];
+
+  guesses = [];
+
   document.getElementById("result").textContent = "";
-  render();
+
+  createBoard();
+
 }
 
-render();
+createBoard();
+
 </script>
 
 </body>

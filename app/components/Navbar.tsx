@@ -12,10 +12,14 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      <Link href="/" className="navbar-brand" onClick={closeMenu}>
-        PhonoPlay
-      </Link>
+        <div className="navbar-brand">
+        <Link href="/" onClick={closeMenu}>
+            PhonoPlay
+        </Link>
 
+        <span>Assessment 1</span>
+        </div>
+        
       <button
         className="menu-button"
         onClick={() => setMenuOpen(!menuOpen)}
