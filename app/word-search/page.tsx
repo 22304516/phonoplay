@@ -59,37 +59,58 @@ export default function WordSearch() {
     setFoundWords([]);
   }
 
-  function generateHTML() {
-    const html = `
+function generateHTML() {
+  const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PhonoPlay Word Search</title>
+<title>PhonoPlay Word Search Activity</title>
 
 <style>
-
 * {
   box-sizing: border-box;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background: #f5f7fa;
+  margin: 0;
+  padding: 30px 15px;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f8fafc;
   color: #111827;
   text-align: center;
-  padding: 30px 15px;
 }
 
-h1 {
-  margin-bottom: 5px;
+main {
+  max-width: 800px;
+  margin: auto;
 }
 
 .subtitle {
   color: #6b7280;
+}
+
+.word-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 25px 0;
+}
+
+.word {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+}
+
+.word.found {
+  background: #dcfce7;
+  border-color: #22c55e;
+  text-decoration: line-through;
 }
 
 .grid {
@@ -103,305 +124,366 @@ h1 {
 .cell {
   width: 55px;
   height: 55px;
-  border: 2px solid #d1d5db;
-  background: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 18px;
-  cursor: pointer;
+  border: 1px solid #d1d5db;
   border-radius: 5px;
+  background: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .cell:hover {
-  background: #e5e7eb;
+  background: #f3f4f6;
 }
 
 .cell.selected {
-  background: #93c5fd;
+  background: #bfdbfe;
   border-color: #2563eb;
 }
 
-.word-list {
-  max-width: 450px;
-  margin: 30px auto;
-  text-align: left;
-}
-
-.word-list li {
-  margin-bottom: 10px;
-}
-
-.found {
-  color: #16a34a;
-  font-weight: bold;
-}
-
 .controls {
-  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-button.control {
-  padding: 11px 16px;
-  margin: 5px;
-  cursor: pointer;
+button {
+  min-height: 44px;
+  padding: 10px 16px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   background: white;
+  cursor: pointer;
+  font-weight: 600;
 }
 
-button.primary {
+button:hover {
+  background: #f3f4f6;
+}
+
+.primary {
   background: #2563eb;
   color: white;
   border-color: #2563eb;
 }
 
-#result {
-  margin-top: 20px;
-  font-weight: bold;
+.primary:hover {
+  background: #1d4ed8;
 }
 
-@media (max-width: 500px) {
+.result {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background: #dcfce7;
+}
 
+.hint {
+  margin-top: 20px;
+  color: #6b7280;
+}
+
+@media (max-width: 600px) {
   .grid {
     grid-template-columns: repeat(7, 40px);
-    gap: 3px;
+    gap: 4px;
   }
 
   .cell {
     width: 40px;
     height: 40px;
-    font-size: 14px;
+    font-size: 13px;
   }
-
 }
-
 </style>
-
 </head>
 
 <body>
 
+<main>
+
 <h1>PhonoPlay Word Search</h1>
 
 <p class="subtitle">
-Find the English words represented by the phonemes.
+Find the phoneme-based words hidden in the grid.
 </p>
 
-<div class="grid" id="grid"></div>
+<div
+  id="wordList"
+  class="word-list">
+</div>
 
-<div class="word-list">
-
-<h2>Phoneme Words</h2>
-
-<ul>
-
-<li id="word-THIN">
-/θɪn/ → <strong>THIN</strong>
-</li>
-
-<li id="word-SHIP">
-/ʃɪp/ → <strong>SHIP</strong>
-</li>
-
-<li id="word-CHIP">
-/tʃɪp/ → <strong>CHIP</strong>
-</li>
-
-<li id="word-SING">
-/sɪŋ/ → <strong>SING</strong>
-</li>
-
-<li id="word-THIS">
-/ðɪs/ → <strong>THIS</strong>
-</li>
-
-</ul>
-
+<div
+  id="grid"
+  class="grid"
+  aria-label="Word search grid">
 </div>
 
 <div class="controls">
 
-<button class="control primary" onclick="checkSelection()">
-Check Selection
+<button
+  class="primary"
+  onclick="checkSelection()">
+  Check Selection
 </button>
 
-<button class="control" onclick="reset()">
-Reset
+<button onclick="resetGame()">
+  Reset
 </button>
 
 </div>
 
-<p id="result"></p>
+<div
+  id="result"
+  class="result"
+  style="display:none;"
+  role="status"
+  aria-live="polite">
+</div>
+
+<p class="hint">
+Select the letters belonging to a phoneme word,
+then choose Check Selection.
+</p>
+
+</main>
 
 <script>
 
-const letters = [
-
-["T","H","I","N","S","H","I"],
-["A","C","H","I","P","P","T"],
-["S","I","N","G","O","E","H"],
-["T","H","I","S","R","L","I"],
-["M","A","T","H","I","N","N"],
-["P","H","O","N","E","M","E"],
-["S","H","I","P","A","B","C"]
-
+const words = [
+  {
+    phoneme: "/θɪn/",
+    english: "THIN"
+  },
+  {
+    phoneme: "/ʃɪp/",
+    english: "SHIP"
+  },
+  {
+    phoneme: "/tʃɪp/",
+    english: "CHIP"
+  },
+  {
+    phoneme: "/sɪŋ/",
+    english: "SING"
+  },
+  {
+    phoneme: "/ðɪs/",
+    english: "THIS"
+  }
 ];
 
-const phonemeWords = {
-
-"THIN": "/θɪn/",
-"SHIP": "/ʃɪp/",
-"CHIP": "/tʃɪp/",
-"SING": "/sɪŋ/",
-"THIS": "/ðɪs/"
-
-};
+const gridData = [
+  ["T", "H", "I", "N", "S", "H", "I"],
+  ["A", "C", "H", "I", "P", "P", "T"],
+  ["S", "I", "N", "G", "O", "E", "H"],
+  ["T", "H", "I", "S", "R", "L", "I"],
+  ["M", "A", "T", "H", "I", "N", "N"],
+  ["P", "H", "O", "N", "E", "M", "E"],
+  ["S", "H", "I", "P", "A", "B", "C"]
+];
 
 let selected = [];
-let found = [];
 
-function render() {
+let foundWords = [];
 
-const grid = document.getElementById("grid");
+function renderWords() {
 
-grid.innerHTML = "";
+  const container =
+    document.getElementById("wordList");
 
-letters.forEach((row, rowIndex) => {
+  container.innerHTML = "";
 
-row.forEach((letter, columnIndex) => {
+  words.forEach((word, index) => {
 
-const cell = document.createElement("button");
+    const element =
+      document.createElement("div");
 
-cell.className = "cell";
+    element.className = "word";
 
-cell.textContent = letter;
+    if (foundWords.includes(index)) {
+      element.classList.add("found");
+    }
 
-cell.setAttribute(
-"aria-label",
-"Row " +
-(rowIndex + 1) +
-", Column " +
-(columnIndex + 1) +
-", Letter " +
-letter
-);
+    element.textContent =
+      word.phoneme + " → " + word.english;
 
-cell.onclick = function() {
+    container.appendChild(element);
 
-const id =
-rowIndex + "-" + columnIndex;
-
-if (selected.includes(id)) {
-
-selected =
-selected.filter(item => item !== id);
-
-cell.classList.remove("selected");
+  });
 
 }
 
-else {
+function renderGrid() {
 
-selected.push(id);
+  const grid =
+    document.getElementById("grid");
 
-cell.classList.add("selected");
+  grid.innerHTML = "";
+
+  gridData.forEach((row, rowIndex) => {
+
+    row.forEach((letter, columnIndex) => {
+
+      const button =
+        document.createElement("button");
+
+      button.className = "cell";
+
+      button.textContent = letter;
+
+      button.setAttribute(
+        "aria-label",
+        "Row " +
+        (rowIndex + 1) +
+        ", Column " +
+        (columnIndex + 1) +
+        ", letter " +
+        letter
+      );
+
+      button.setAttribute(
+        "aria-pressed",
+        selected.some(
+          cell =>
+            cell.row === rowIndex &&
+            cell.column === columnIndex
+        )
+      );
+
+      const selectedCell =
+        selected.some(
+          cell =>
+            cell.row === rowIndex &&
+            cell.column === columnIndex
+        );
+
+      if (selectedCell) {
+        button.classList.add("selected");
+      }
+
+      button.onclick = () =>
+        toggleCell(
+          rowIndex,
+          columnIndex
+        );
+
+      grid.appendChild(button);
+
+    });
+
+  });
 
 }
 
-};
+function toggleCell(row, column) {
 
-grid.appendChild(cell);
+  const index =
+    selected.findIndex(
+      cell =>
+        cell.row === row &&
+        cell.column === column
+    );
 
-});
+  if (index >= 0) {
 
-});
+    selected.splice(index, 1);
+
+  } else {
+
+    selected.push({
+      row,
+      column
+    });
+
+  }
+
+  renderGrid();
 
 }
 
 function checkSelection() {
 
-const result =
-document.getElementById("result");
+  const letters =
+    selected
+      .map(
+        cell =>
+          gridData[cell.row][cell.column]
+      )
+      .join("");
 
-const selectedLetters = selected
-.map(cell => {
+  const normalised =
+    letters.toUpperCase();
 
-const parts =
-cell.split("-");
+  const wordIndex =
+    words.findIndex(
+      word =>
+        word.english === normalised &&
+        !foundWords.includes(
+          words.indexOf(word)
+        )
+    );
 
-return letters[
-Number(parts[0])
-][
-Number(parts[1])
-];
+  const result =
+    document.getElementById("result");
 
-})
-.join("");
+  result.style.display = "block";
 
-if (phonemeWords[selectedLetters]) {
+  if (wordIndex >= 0) {
 
-if (!found.includes(selectedLetters)) {
+    foundWords.push(wordIndex);
 
-found.push(selectedLetters);
+    result.textContent =
+      "Correct! " +
+      words[wordIndex].phoneme +
+      " → " +
+      words[wordIndex].english;
 
-document
-.getElementById("word-" + selectedLetters)
-.classList.add("found");
+    selected = [];
 
-result.innerHTML =
-"Correct! " +
-phonemeWords[selectedLetters] +
-" → <strong>" +
-selectedLetters +
-"</strong>";
+    renderWords();
+    renderGrid();
 
-}
+    if (foundWords.length === words.length) {
 
-else {
+      result.textContent =
+        "Excellent! You found all five words.";
 
-result.textContent =
-"You already found that word.";
+    }
 
-}
+  } else {
 
-selected = [];
+    result.textContent =
+      "That selection does not match a word. Try again.";
 
-render();
-
-}
-
-else {
-
-result.textContent =
-"That selection does not match a word.";
-
-}
+  }
 
 }
 
-function reset() {
+function resetGame() {
 
-selected = [];
+  selected = [];
 
-found = [];
+  foundWords = [];
 
-document
-.querySelectorAll(".found")
-.forEach(element => {
+  const result =
+    document.getElementById("result");
 
-element.classList.remove("found");
+  result.style.display = "none";
 
-});
+  result.textContent = "";
 
-document.getElementById("result").textContent = "";
-
-render();
+  renderWords();
+  renderGrid();
 
 }
 
-render();
+renderWords();
+renderGrid();
 
 </script>
 
@@ -409,16 +491,26 @@ render();
 </html>
 `;
 
-    const blob = new Blob([html], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
+  const blob = new Blob(
+    [html],
+    { type: "text/html" }
+  );
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "phonoplay-word-search.html";
-    link.click();
+  const url =
+    URL.createObjectURL(blob);
 
-    URL.revokeObjectURL(url);
-  }
+  const link =
+    document.createElement("a");
+
+  link.href = url;
+
+  link.download =
+    "phonoplay-word-search.html";
+
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
 
   return (
     <div className="word-search-page">
