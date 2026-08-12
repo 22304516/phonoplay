@@ -20,7 +20,7 @@ a {
   text-decoration: none;
 }
 
-nav {
+.navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,18 +29,32 @@ nav {
   border-bottom: 1px solid #e5e7eb;
 }
 
-nav div {
+.navbar-brand {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.navigation-links {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
 
-nav a {
+.navigation-links a {
   font-weight: 500;
 }
 
-nav a:hover {
+.navigation-links a:hover {
   color: #2563eb;
+}
+
+.menu-button {
+  display: none;
+  border: none;
+  background: transparent;
+  font-size: 1.7rem;
+  cursor: pointer;
+  padding: 0.25rem;
 }
 
 main {
@@ -60,19 +74,46 @@ footer p {
 }
 
 @media (max-width: 700px) {
-  nav {
+  .navbar {
+    position: relative;
     padding: 1rem;
   }
 
-  nav {
-    flex-direction: column;
-    gap: 1rem;
+  .menu-button {
+    display: block;
   }
 
-  nav div {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
+  .navigation-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    z-index: 10;
+  }
+
+  .navigation-links.navigation-open {
+    display: flex;
+  }
+
+  .navigation-links a {
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  html[data-theme="dark"] .navigation-links {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  html[data-theme="dark"] .navigation-links a {
+    border-color: #374151;
   }
 }
 
