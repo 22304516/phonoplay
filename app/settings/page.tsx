@@ -1,18 +1,28 @@
+import ThemeSelector from "../components/ThemeSelector";
+
 export default function Settings() {
   return (
-    <div>
-      <h1>Settings</h1>
+    <div className="settings-page">
+      <section className="page-header">
+        <h1>Settings</h1>
 
-      <h2>Appearance</h2>
+        <p>
+          Customise the PhonoPlay interface to suit your preferences.
+        </p>
+      </section>
 
-      <p>Choose how PhonoPlay looks.</p>
+      <section className="settings-card">
+        <ThemeSelector />
+      </section>
 
-      <button>Light Mode</button>
-      <button>Dark Mode</button>
+      <section className="settings-card">
+        <h2>Layout</h2>
 
-      <h2>Layout</h2>
-
-      <p>Layout preferences will be available here.</p>
+        <p>
+          Layout preferences will be introduced in a later version
+          of the application.
+        </p>
+      </section>
     </div>
   );
 }
