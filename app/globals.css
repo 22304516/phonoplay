@@ -292,3 +292,87 @@ footer p {
   text-align: center;
   color: #6b7280;
 }
+
+.word-search-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.phoneme-word-list {
+  padding-left: 1.2rem;
+}
+
+.phoneme-word-list li {
+  margin-bottom: 0.75rem;
+}
+
+.found-label {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.word-search-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 55px);
+  gap: 0.4rem;
+  justify-content: center;
+  margin: 2rem auto;
+}
+
+.search-cell {
+  width: 55px;
+  height: 55px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.search-cell:hover {
+  background: #f3f4f6;
+}
+
+.search-cell.selected {
+  background: #bfdbfe;
+  border-color: #2563eb;
+}
+
+.word-search-controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.word-search-controls button,
+.settings-panel button {
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+.word-search-controls button:hover,
+.settings-panel button:hover {
+  background: #f3f4f6;
+}
+
+@media (max-width: 600px) {
+  .word-search-page {
+    padding: 2rem 1rem;
+  }
+
+  .word-search-grid {
+    grid-template-columns: repeat(7, 40px);
+    gap: 0.25rem;
+  }
+
+  .search-cell {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+}
