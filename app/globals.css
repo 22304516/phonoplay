@@ -496,3 +496,190 @@ html[data-theme="dark"] .theme-options button {
   color: #f9fafb;
   border-color: #4b5563;
 }
+
+.home-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-section {
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.assessment-label {
+  color: #2563eb;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.hero-section h1 {
+  margin: 0;
+  font-size: 3.5rem;
+}
+
+.hero-section h2 {
+  margin-top: 0.5rem;
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+
+.hero-description {
+  max-width: 650px;
+  margin: 1.5rem auto;
+  color: #6b7280;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.primary-button,
+.secondary-button,
+.card-button {
+  display: inline-block;
+  padding: 0.85rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.primary-button {
+  background: #2563eb;
+  color: white;
+}
+
+.primary-button:hover {
+  background: #1d4ed8;
+}
+
+.secondary-button {
+  background: white;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.secondary-button:hover {
+  background: #eff6ff;
+}
+
+.activities-section {
+  padding: 3rem 2rem;
+}
+
+.section-heading {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section-heading p {
+  color: #6b7280;
+}
+
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.activity-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.activity-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.activity-card h3 {
+  margin-top: 1.25rem;
+  font-size: 1.4rem;
+}
+
+.activity-card p {
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.activity-card ul {
+  padding-left: 1.25rem;
+  line-height: 1.8;
+}
+
+.card-button {
+  margin-top: 1rem;
+  background: #2563eb;
+  color: white;
+}
+
+.card-button:hover {
+  background: #1d4ed8;
+}
+
+.information-section {
+  margin: 2rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.information-section p {
+  max-width: 700px;
+  margin: 1rem auto;
+  color: #6b7280;
+  line-height: 1.7;
+}
+
+.text-link {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .hero-section {
+    padding: 3rem 1rem;
+  }
+
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-section h2 {
+    font-size: 1.4rem;
+  }
+
+  .activities-section {
+    padding: 2rem 1rem;
+  }
+
+  .activity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .information-section {
+    margin: 1rem;
+  }
+}
