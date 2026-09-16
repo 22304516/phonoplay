@@ -97,7 +97,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
     }
 
     const body = await request.json();
-    const { name, type, difficulty, hint, settings } = body;
+    const { name, type, difficulty, hint, settings, wordId } = body;
 
     if (!name || typeof name !== "string") {
       return NextResponse.json(
@@ -134,6 +134,26 @@ export async function PUT(request: Request, { params }: RouteContext) {
       );
     }
 
+    if (wordId !== undefined && wordId !== null) {
+      if (!Number.isInteger(wordId)) {
+        return NextResponse.json({ error: "Invalid word ID" }, { status: 400 });
+      }
+
+      const word = await prisma.word.findFirst({
+        where: {
+          id: wordId,
+          wordListId,
+        },
+      });
+
+      if (!word) {
+        return NextResponse.json(
+          { error: "Word does not belong to this word list" },
+          { status: 400 },
+        );
+      }
+    }
+
     const updatedActivity = await prisma.activity.update({
       where: {
         id: activityIdNumber,
@@ -144,6 +164,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
         difficulty,
         hint: hint ?? true,
         settings: settings ?? null,
+        wordId: type === "WORDLE" ? (wordId ?? null) : null,
       },
     });
 

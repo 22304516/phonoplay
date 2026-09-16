@@ -55,6 +55,20 @@ export default function WordListPage() {
   const [activityHint, setActivityHint] = useState(true);
   const [activityWordId, setActivityWordId] = useState("");
 
+  const [editingActivityId, setEditingActivityId] = useState<number | null>(
+    null,
+  );
+
+  const [editActivityName, setEditActivityName] = useState("");
+  const [editActivityType, setEditActivityType] = useState<
+    "WORDLE" | "WORD_SEARCH"
+  >("WORD_SEARCH");
+  const [editActivityDifficulty, setEditActivityDifficulty] = useState<
+    "EASY" | "MEDIUM" | "HARD"
+  >("EASY");
+  const [editActivityHint, setEditActivityHint] = useState(true);
+  const [editActivityWordId, setEditActivityWordId] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -188,6 +202,92 @@ export default function WordListPage() {
       console.error(error);
       setError(
         error instanceof Error ? error.message : "Failed to create activity",
+      );
+    }
+  }
+
+  function startEditingActivity(activity: Activity) {
+    setEditingActivityId(activity.id);
+    setEditActivityName(activity.name);
+    setEditActivityType(activity.type);
+    setEditActivityDifficulty(activity.difficulty);
+    setEditActivityHint(activity.hint);
+    setEditActivityWordId(activity.wordId?.toString() ?? "");
+    setError("");
+  }
+
+  function cancelEditingActivity() {
+    setEditingActivityId(null);
+    setEditActivityName("");
+    setEditActivityType("WORD_SEARCH");
+    setEditActivityDifficulty("EASY");
+    setEditActivityHint(true);
+    setEditActivityWordId("");
+  }
+
+  async function updateActivity(event: React.FormEvent) {
+    event.preventDefault();
+
+    if (!editingActivityId) {
+      return;
+    }
+
+    if (!editActivityName.trim()) {
+      setError("Activity name is required");
+      return;
+    }
+
+    if (editActivityType === "WORDLE" && !editActivityWordId) {
+      setError("Please select a target word for Wordle");
+      return;
+    }
+
+    try {
+      setError("");
+
+      const settings =
+        editActivityType === "WORD_SEARCH"
+          ? JSON.stringify({
+              gridSize:
+                editActivityDifficulty === "EASY"
+                  ? 7
+                  : editActivityDifficulty === "MEDIUM"
+                    ? 8
+                    : 9,
+              direction: "horizontal",
+            })
+          : undefined;
+
+      const response = await fetch(
+        `/api/word-lists/${id}/activities/${editingActivityId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: editActivityName.trim(),
+            type: editActivityType,
+            difficulty: editActivityDifficulty,
+            hint: editActivityHint,
+            wordId:
+              editActivityType === "WORDLE" ? Number(editActivityWordId) : null,
+            settings,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to update activity");
+      }
+
+      cancelEditingActivity();
+      await loadWordList();
+    } catch (error) {
+      console.error(error);
+      setError(
+        error instanceof Error ? error.message : "Failed to update activity",
       );
     }
   }
@@ -437,28 +537,130 @@ export default function WordListPage() {
           <div>
             {wordList.activities.map((activity) => (
               <article key={activity.id} className="settings-card">
-                <h3>{activity.name}</h3>
+                {editingActivityId === activity.id ? (
+                  <form onSubmit={updateActivity}>
+                    <h3>Edit Activity</h3>
 
-                <p>
-                  {activity.type === "WORD_SEARCH" ? "Word Search" : "Wordle"} ·{" "}
-                  {activity.difficulty}
-                </p>
+                    <label>
+                      Activity name
+                      <input
+                        type="text"
+                        value={editActivityName}
+                        onChange={(event) =>
+                          setEditActivityName(event.target.value)
+                        }
+                      />
+                    </label>
 
-                {activity.type === "WORDLE" && activity.word && (
-                  <p>
-                    <strong>Target word:</strong> {activity.word.english} —{" "}
-                    {activity.word.phoneme}
-                  </p>
+                    <label>
+                      Activity type
+                      <select
+                        value={editActivityType}
+                        onChange={(event) => {
+                          const type = event.target.value as
+                            | "WORDLE"
+                            | "WORD_SEARCH";
+
+                          setEditActivityType(type);
+
+                          if (type === "WORD_SEARCH") {
+                            setEditActivityWordId("");
+                          }
+                        }}
+                      >
+                        <option value="WORD_SEARCH">Word Search</option>
+                        <option value="WORDLE">Wordle</option>
+                      </select>
+                    </label>
+
+                    {editActivityType === "WORDLE" && (
+                      <label>
+                        Target word
+                        <select
+                          value={editActivityWordId}
+                          onChange={(event) =>
+                            setEditActivityWordId(event.target.value)
+                          }
+                        >
+                          <option value="">Select a word</option>
+
+                          {wordList.words.map((word) => (
+                            <option key={word.id} value={word.id}>
+                              {word.english} — {word.phoneme}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
+
+                    <label>
+                      Difficulty
+                      <select
+                        value={editActivityDifficulty}
+                        onChange={(event) =>
+                          setEditActivityDifficulty(
+                            event.target.value as "EASY" | "MEDIUM" | "HARD",
+                          )
+                        }
+                      >
+                        <option value="EASY">Easy</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="HARD">Hard</option>
+                      </select>
+                    </label>
+
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={editActivityHint}
+                        onChange={(event) =>
+                          setEditActivityHint(event.target.checked)
+                        }
+                      />
+                      Allow hints
+                    </label>
+
+                    <button type="submit">Save Changes</button>
+
+                    <button type="button" onClick={cancelEditingActivity}>
+                      Cancel
+                    </button>
+                  </form>
+                ) : (
+                  <>
+                    <h3>{activity.name}</h3>
+
+                    <p>
+                      {activity.type === "WORD_SEARCH"
+                        ? "Word Search"
+                        : "Wordle"}{" "}
+                      · {activity.difficulty}
+                    </p>
+
+                    {activity.type === "WORDLE" && activity.word && (
+                      <p>
+                        <strong>Target word:</strong> {activity.word.english} —{" "}
+                        {activity.word.phoneme}
+                      </p>
+                    )}
+
+                    <p>Hints: {activity.hint ? "Enabled" : "Disabled"}</p>
+
+                    <button
+                      type="button"
+                      onClick={() => startEditingActivity(activity)}
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => deleteActivity(activity.id)}
+                    >
+                      Delete
+                    </button>
+                  </>
                 )}
-
-                <p>Hints: {activity.hint ? "Enabled" : "Disabled"}</p>
-
-                <button
-                  type="button"
-                  onClick={() => deleteActivity(activity.id)}
-                >
-                  Delete
-                </button>
               </article>
             ))}
           </div>
