@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type WordList = {
@@ -80,9 +81,7 @@ export default function WordListsPage() {
     } catch (error) {
       console.error(error);
       setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to create word list"
+        error instanceof Error ? error.message : "Failed to create word list",
       );
     }
   }
@@ -108,9 +107,7 @@ export default function WordListsPage() {
     } catch (error) {
       console.error(error);
       setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to delete word list"
+        error instanceof Error ? error.message : "Failed to delete word list",
       );
     }
   }
@@ -118,9 +115,7 @@ export default function WordListsPage() {
   return (
     <main className="page-container">
       <h1>Word Lists</h1>
-      <p>
-        Create and manage phoneme word lists for your activities.
-      </p>
+      <p>Create and manage phoneme word lists for your activities.</p>
 
       <section className="settings-card">
         <h2>Create Word List</h2>
@@ -162,15 +157,17 @@ export default function WordListsPage() {
           <div>
             {wordLists.map((wordList) => (
               <article key={wordList.id} className="settings-card">
-                <h3>{wordList.name}</h3>
+                <h3>
+                  <Link href={`/word-lists/${wordList.id}`}>
+                    {wordList.name}
+                  </Link>
+                </h3>
 
-                {wordList.description && (
-                  <p>{wordList.description}</p>
-                )}
+                {wordList.description && <p>{wordList.description}</p>}
 
                 <p>
-                  {wordList.words.length} words ·{" "}
-                  {wordList.activities.length} activities
+                  {wordList.words.length} words · {wordList.activities.length}{" "}
+                  activities
                 </p>
 
                 <button

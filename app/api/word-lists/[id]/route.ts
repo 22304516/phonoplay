@@ -5,10 +5,7 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function GET(
-  _request: Request,
-  { params }: RouteContext
-) {
+export async function GET(_request: Request, { params }: RouteContext) {
   try {
     const { id } = await params;
     const wordListId = Number(id);
@@ -16,14 +13,27 @@ export async function GET(
     if (!Number.isInteger(wordListId)) {
       return NextResponse.json(
         { error: "Invalid word list ID" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const wordList = await prisma.wordList.findUnique({
-      where: { id: wordListId },
+      where: {
+        id: wordListId,
+      },
       include: {
-        words: true,
+        words: {
+          include: {
+            phonemes: {
+              orderBy: {
+                position: "asc",
+              },
+            },
+          },
+          orderBy: {
+            english: "asc",
+          },
+        },
         activities: true,
       },
     });
@@ -31,7 +41,7 @@ export async function GET(
     if (!wordList) {
       return NextResponse.json(
         { error: "Word list not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -41,15 +51,12 @@ export async function GET(
 
     return NextResponse.json(
       { error: "Failed to fetch word list" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function PUT(
-  request: Request,
-  { params }: RouteContext
-) {
+export async function PUT(request: Request, { params }: RouteContext) {
   try {
     const { id } = await params;
     const wordListId = Number(id);
@@ -57,7 +64,7 @@ export async function PUT(
     if (!Number.isInteger(wordListId)) {
       return NextResponse.json(
         { error: "Invalid word list ID" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -65,18 +72,14 @@ export async function PUT(
     const { name, description } = body;
 
     if (!name || typeof name !== "string") {
-      return NextResponse.json(
-        { error: "Name is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
     const wordList = await prisma.wordList.update({
       where: { id: wordListId },
       data: {
         name,
-        description:
-          typeof description === "string" ? description : null,
+        description: typeof description === "string" ? description : null,
       },
     });
 
@@ -86,15 +89,12 @@ export async function PUT(
 
     return NextResponse.json(
       { error: "Failed to update word list" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function DELETE(
-  _request: Request,
-  { params }: RouteContext
-) {
+export async function DELETE(_request: Request, { params }: RouteContext) {
   try {
     const { id } = await params;
     const wordListId = Number(id);
@@ -102,7 +102,7 @@ export async function DELETE(
     if (!Number.isInteger(wordListId)) {
       return NextResponse.json(
         { error: "Invalid word list ID" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -115,7 +115,7 @@ export async function DELETE(
     if (!existingWordList) {
       return NextResponse.json(
         { error: "Word list not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -133,7 +133,7 @@ export async function DELETE(
 
     return NextResponse.json(
       { error: "Failed to delete word list" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
