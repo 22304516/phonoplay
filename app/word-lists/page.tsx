@@ -22,6 +22,10 @@ export default function WordListsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [editingWordListId, setEditingWordListId] = useState<number | null>(
+    null,
+  );
+
   async function loadWordLists() {
     try {
       setLoading(true);
@@ -86,6 +90,60 @@ export default function WordListsPage() {
     }
   }
 
+  function startEditingWordList(wordList: WordList) {
+    setEditingWordListId(wordList.id);
+    setName(wordList.name);
+    setDescription(wordList.description || "");
+    setError("");
+  }
+
+  function cancelEditingWordList() {
+    setEditingWordListId(null);
+    setName("");
+    setDescription("");
+  }
+
+  async function updateWordList(event: React.FormEvent) {
+    event.preventDefault();
+
+    if (!editingWordListId) {
+      return;
+    }
+
+    if (!name.trim()) {
+      setError("Word list name is required");
+      return;
+    }
+
+    try {
+      setError("");
+
+      const response = await fetch(`/api/word-lists/${editingWordListId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          description: description.trim() || null,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to update word list");
+      }
+
+      cancelEditingWordList();
+      await loadWordLists();
+    } catch (error) {
+      console.error(error);
+      setError(
+        error instanceof Error ? error.message : "Failed to update word list",
+      );
+    }
+  }
+
   async function deleteWordList(id: number) {
     if (!confirm("Delete this word list?")) {
       return;
@@ -118,9 +176,8 @@ export default function WordListsPage() {
       <p>Create and manage phoneme word lists for your activities.</p>
 
       <section className="settings-card">
-        <h2>Create Word List</h2>
-
-        <form onSubmit={createWordList}>
+        <h2>{editingWordListId ? "Edit Word List" : "Create Word List"}</h2>
+        <form onSubmit={editingWordListId ? updateWordList : createWordList}>
           <label>
             Name
             <input
@@ -140,7 +197,15 @@ export default function WordListsPage() {
             />
           </label>
 
-          <button type="submit">Create Word List</button>
+          <button type="submit">
+            {editingWordListId ? "Save Changes" : "Create Word List"}
+          </button>
+
+          {editingWordListId && (
+            <button type="button" onClick={cancelEditingWordList}>
+              Cancel
+            </button>
+          )}
         </form>
       </section>
 
@@ -169,6 +234,13 @@ export default function WordListsPage() {
                   {wordList.words.length} words · {wordList.activities.length}{" "}
                   activities
                 </p>
+
+                <button
+                  type="button"
+                  onClick={() => startEditingWordList(wordList)}
+                >
+                  Edit
+                </button>
 
                 <button
                   type="button"
