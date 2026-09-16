@@ -544,7 +544,7 @@ export default function WordListPage() {
           </button>
         </>
       )}
-      
+
       {error && <p>{error}</p>}
 
       <section className="settings-card">
@@ -826,8 +826,16 @@ export default function WordListPage() {
 
                     <p>Hints: {activity.hint ? "Enabled" : "Disabled"}</p>
 
+                    {activity.type === "WORDLE" && !activity.word && (
+                      <p>
+                        This Wordle has no target word. Edit the activity and
+                        select a target word before launching it.
+                      </p>
+                    )}
+
                     <button
                       type="button"
+                      disabled={activity.type === "WORDLE" && !activity.word}
                       onClick={() => {
                         router.push(
                           activity.type === "WORDLE"
