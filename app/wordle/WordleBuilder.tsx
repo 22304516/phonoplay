@@ -13,6 +13,16 @@ type DatabaseWord = {
   }[];
 };
 
+type DatabaseActivity = {
+  id: number;
+  name: string;
+  type: "WORDLE" | "WORD_SEARCH";
+  difficulty: "EASY" | "MEDIUM" | "HARD";
+  hint: boolean;
+  wordId: number | null;
+  word: DatabaseWord | null;
+};
+
 type WordleProps = {
   activityId?: string;
 };
@@ -65,6 +75,8 @@ export default function Wordle({ activityId }: WordleProps) {
   const [databaseWords, setDatabaseWords] = useState<DatabaseWord[]>([]);
   const [targetDatabaseWord, setTargetDatabaseWord] =
     useState<DatabaseWord | null>(null);
+
+  const [activity, setActivity] = useState<DatabaseActivity | null>(null);
 
   const [activityName, setActivityName] = useState("");
   const [activityDifficulty, setActivityDifficulty] =
@@ -133,17 +145,14 @@ export default function Wordle({ activityId }: WordleProps) {
 
         const data = await response.json();
 
-        setActivityName(data.name);
-
-        // Load ALL words for the keyboard
+        setActivity(data);
         setDatabaseWords(data.wordList.words);
-
-        // Load the selected target word
         setTargetDatabaseWord(data.word ?? null);
-        console.log("Selected activity target:", data.word);
 
         if (data.difficulty) {
-          setActivityDifficulty(data.difficulty.toLowerCase() as Difficulty);
+          setDifficulty(
+            data.difficulty.toLowerCase() as "easy" | "medium" | "hard",
+          );
         }
 
         if (typeof data.hint === "boolean") {
@@ -692,20 +701,23 @@ render();
                 key={item.symbol}
                 onClick={() => addPhoneme(item.symbol)}
                 title={
-                  item.example
-                    ? `${item.symbol} = ${item.english} as in ${item.example}`
-                    : item.symbol
+                  !activityId || activity?.hint
+                    ? item.example
+                      ? `${item.symbol} = ${item.english} as in ${item.example}`
+                      : item.symbol
+                    : undefined
                 }
                 aria-label={
-                  item.example
-                    ? `${item.symbol}, ${item.english} as in ${item.example}`
+                  !activityId || activity?.hint
+                    ? item.example
+                      ? `${item.symbol}, ${item.english} as in ${item.example}`
+                      : item.symbol
                     : item.symbol
                 }
               >
                 <span>{item.symbol}</span>
               </button>
             ))}
-
             <button onClick={deletePhoneme}>Delete</button>
 
             <button onClick={checkAnswer}>Enter</button>
