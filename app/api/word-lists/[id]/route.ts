@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { prisma } from "@/lib/prisma";
 
 type RouteContext = {
@@ -34,7 +35,23 @@ export async function GET(_request: Request, { params }: RouteContext) {
             english: "asc",
           },
         },
-        activities: true,
+
+        activities: {
+          include: {
+            word: {
+              include: {
+                phonemes: {
+                  orderBy: {
+                    position: "asc",
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
       },
     });
 
@@ -76,7 +93,9 @@ export async function PUT(request: Request, { params }: RouteContext) {
     }
 
     const wordList = await prisma.wordList.update({
-      where: { id: wordListId },
+      where: {
+        id: wordListId,
+      },
       data: {
         name,
         description: typeof description === "string" ? description : null,

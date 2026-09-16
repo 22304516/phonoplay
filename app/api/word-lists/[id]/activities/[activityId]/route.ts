@@ -25,6 +25,15 @@ export async function GET(_request: Request, { params }: RouteContext) {
         wordListId,
       },
       include: {
+        word: {
+          include: {
+            phonemes: {
+              orderBy: {
+                position: "asc",
+              },
+            },
+          },
+        },
         wordList: {
           include: {
             words: {

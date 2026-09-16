@@ -17,7 +17,13 @@ type WordleProps = {
   activityId?: string;
 };
 
-const phonemes = [
+type PhonemeOption = {
+  symbol: string;
+  english: string;
+  example: string;
+};
+
+const defaultPhonemes: PhonemeOption[] = [
   { symbol: "/θ/", english: "TH", example: "thin" },
   { symbol: "/ð/", english: "TH", example: "this" },
   { symbol: "/ʃ/", english: "SH", example: "ship" },
@@ -25,6 +31,7 @@ const phonemes = [
   { symbol: "/ɪ/", english: "I", example: "sit" },
   { symbol: "/iː/", english: "EE", example: "see" },
   { symbol: "/ŋ/", english: "NG", example: "sing" },
+  { symbol: "/n/", english: "N", example: "win" },
 ];
 
 type TileStatus = "correct" | "present" | "incorrect" | "empty";
@@ -56,6 +63,9 @@ const difficultySettings = {
 
 export default function Wordle({ activityId }: WordleProps) {
   const [databaseWords, setDatabaseWords] = useState<DatabaseWord[]>([]);
+  const [targetDatabaseWord, setTargetDatabaseWord] =
+    useState<DatabaseWord | null>(null);
+
   const [activityName, setActivityName] = useState("");
   const [activityDifficulty, setActivityDifficulty] =
     useState<Difficulty>("easy");
@@ -69,18 +79,40 @@ export default function Wordle({ activityId }: WordleProps) {
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
 
   const targetWord =
-    activityId && databaseWords.length > 0
-      ? databaseWords[0].phonemes
+    activityId && targetDatabaseWord
+      ? targetDatabaseWord.phonemes
+          .slice()
           .sort((a, b) => a.position - b.position)
           .map((phoneme) => ({
             phoneme: phoneme.symbol,
-            english: databaseWords[0].english,
+            english: targetDatabaseWord.english,
           }))
       : [
-          { phoneme: "/θ/", english: "TH" },
-          { phoneme: "/ɪ/", english: "I" },
-          { phoneme: "/ŋ/", english: "NG" },
+          { phoneme: "/θ/", english: "THING" },
+          { phoneme: "/ɪ/", english: "THING" },
+          { phoneme: "/n/", english: "THING" },
         ];
+
+  const keyboardPhonemes: PhonemeOption[] = activityId
+    ? Array.from(
+        new Set([
+          ...defaultPhonemes.map((item) => item.symbol),
+          ...databaseWords.flatMap((word) =>
+            word.phonemes.map((phoneme) => phoneme.symbol),
+          ),
+        ]),
+      ).map((symbol) => {
+        const existing = defaultPhonemes.find((item) => item.symbol === symbol);
+
+        return (
+          existing ?? {
+            symbol,
+            english: symbol,
+            example: "",
+          }
+        );
+      })
+    : defaultPhonemes;
 
   useEffect(() => {
     if (!activityId) {
@@ -102,7 +134,13 @@ export default function Wordle({ activityId }: WordleProps) {
         const data = await response.json();
 
         setActivityName(data.name);
+
+        // Load ALL words for the keyboard
         setDatabaseWords(data.wordList.words);
+
+        // Load the selected target word
+        setTargetDatabaseWord(data.word ?? null);
+        console.log("Selected activity target:", data.word);
 
         if (data.difficulty) {
           setActivityDifficulty(data.difficulty.toLowerCase() as Difficulty);
@@ -184,14 +222,29 @@ export default function Wordle({ activityId }: WordleProps) {
 
   function generateHTML() {
     const selectedDifficulty = difficultySettings[difficulty];
-
     const maxAttempts = selectedDifficulty.attempts;
 
-    const hintsEnabled = selectedDifficulty.hints;
+    const hintsEnabled = activityId ? activityHint : selectedDifficulty.hints;
 
     const generatedTarget = targetWord.map((item) => item.phoneme);
     const generatedEnglish = targetWord[0]?.english || "WORD";
-    const generatedPhoneme = targetWord.map((item) => item.phoneme).join("");
+
+    const generatedKeyboard = keyboardPhonemes
+      .map((item) => {
+        const title =
+          item.example.length > 0
+            ? `${item.symbol} = ${item.english} as in ${item.example}`
+            : item.symbol;
+
+        return `
+<button
+  onclick="addPhoneme(${JSON.stringify(item.symbol)})"
+  title=${JSON.stringify(title)}
+>
+  ${item.symbol}
+</button>`;
+      })
+      .join("");
 
     const html = `
 <!DOCTYPE html>
@@ -199,34 +252,28 @@ export default function Wordle({ activityId }: WordleProps) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>PhonoPlay Wordle Activity</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
-
 body {
+  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 30px 15px;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f8fafc;
-  color: #111827;
-  text-align: center;
+  padding: 20px;
+  background: #f5f5f5;
 }
 
 main {
-  max-width: 700px;
-  margin: auto;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
 }
 
 h1 {
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 }
 
 .subtitle {
-  color: #6b7280;
+  margin-bottom: 20px;
 }
 
 .board {
@@ -234,7 +281,7 @@ h1 {
   flex-direction: column;
   gap: 8px;
   align-items: center;
-  margin: 30px 0;
+  margin: 25px 0;
 }
 
 .row {
@@ -243,34 +290,33 @@ h1 {
 }
 
 .tile {
-  width: 70px;
-  height: 60px;
-  border: 2px solid #d1d5db;
-  border-radius: 6px;
+  width: 55px;
+  height: 55px;
+  border: 2px solid #ccc;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
+  background: white;
 }
 
 .tile.correct {
-  background: #22c55e;
+  background: #6aaa64;
   color: white;
-  border-color: #22c55e;
+  border-color: #6aaa64;
 }
 
 .tile.present {
-  background: #eab308;
+  background: #c9b458;
   color: white;
-  border-color: #eab308;
+  border-color: #c9b458;
 }
 
 .tile.incorrect {
-  background: #6b7280;
+  background: #787c7e;
   color: white;
-  border-color: #6b7280;
+  border-color: #787c7e;
 }
 
 .keyboard {
@@ -278,159 +324,78 @@ h1 {
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
-  max-width: 600px;
-  margin: auto;
+  max-width: 700px;
+  margin: 20px auto;
 }
 
-button {
-  min-width: 60px;
-  min-height: 48px;
-  padding: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: white;
+.keyboard button {
+  padding: 12px 16px;
+  font-size: 18px;
   cursor: pointer;
-  font-size: 16px;
-}
-
-button:hover {
-  background: #f3f4f6;
 }
 
 .controls {
-  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.controls button {
+  padding: 10px 18px;
+  cursor: pointer;
 }
 
 .result {
-  margin-top: 25px;
-  padding: 15px;
-  border-radius: 8px;
+  margin-top: 20px;
+  font-weight: bold;
 }
 
-.success {
-  background: #dcfce7;
+.result.success {
+  color: #2e7d32;
 }
 
-.failure {
-  background: #f3f4f6;
+.result.failure {
+  color: #c62828;
 }
 
 .hint {
   margin-top: 20px;
-  color: #6b7280;
-}
-
-@media (max-width: 500px) {
-  .tile {
-    width: 60px;
-    height: 55px;
-    font-size: 15px;
-  }
-
-  button {
-    min-width: 55px;
-  }
+  font-size: 14px;
 }
 </style>
 </head>
 
 <body>
-
 <main>
 
-<h1>PhonoPlay Wordle</h1>
+<h1>${activityName || "PhonoPlay Wordle"}</h1>
 
 <p class="subtitle">
 Guess the phoneme-based word.
 </p>
 
 <p>
-Difficulty:
-<strong>${selectedDifficulty.label}</strong>
+Difficulty: <strong>${selectedDifficulty.label}</strong>
 </p>
 
-<div
-  id="board"
-  class="board"
-  aria-label="Wordle game board">
-</div>
+<div id="board" class="board"></div>
 
 <div class="keyboard">
-
-<button
-  onclick="addPhoneme('/θ/')"
-  title="/θ/ = TH as in thin"
->
-/θ/
-</button>
-
-<button
-  onclick="addPhoneme('/ð/')"
-  title="/ð/ = TH as in this"
->
-/ð/
-</button>
-
-<button
-  onclick="addPhoneme('/ʃ/')"
-  title="/ʃ/ = SH as in ship"
->
-/ʃ/
-</button>
-
-<button
-  onclick="addPhoneme('/tʃ/')"
-  title="/tʃ/ = CH as in chip"
->
-/tʃ/
-</button>
-
-<button
-  onclick="addPhoneme('/ɪ/')"
-  title="/ɪ/ = I as in sit"
->
-/ɪ/
-</button>
-
-<button
-  onclick="addPhoneme('/iː/')"
-  title="/iː/ = EE as in see"
->
-/iː/
-</button>
-
-<button
-  onclick="addPhoneme('/ŋ/')"
-  title="/ŋ/ = NG as in sing"
->
-/ŋ/
-</button>
-
+${generatedKeyboard}
 </div>
 
 <div class="controls">
-
-<button onclick="deletePhoneme()">
-Delete
-</button>
-
-<button onclick="checkAnswer()">
-Enter
-</button>
-
-<button onclick="resetGame()">
-Reset
-</button>
-
+<button onclick="deletePhoneme()">Delete</button>
+<button onclick="checkAnswer()">Enter</button>
+<button onclick="resetGame()">Reset</button>
 </div>
 
 ${
   hintsEnabled
-    ? `
-<p class="hint">
-  Hover over a phoneme to see its English equivalent.
-</p>
-`
+    ? `<p class="hint">
+Hover over a phoneme to see its English equivalent.
+</p>`
     : ""
 }
 
@@ -439,50 +404,33 @@ ${
 </main>
 
 <script>
-
 const target = ${JSON.stringify(generatedTarget)};
-
 let current = [];
-
 let guesses = [];
-
 const maxAttempts = ${maxAttempts};
 
 function addPhoneme(phoneme) {
-
-  if (current.length >= target.length) {
-    return;
-  }
+  if (current.length >= target.length) return;
 
   current.push(phoneme);
-
   render();
-
 }
 
 function deletePhoneme() {
-
   current.pop();
-
   render();
-
 }
 
 function checkAnswer() {
-
   if (current.length !== target.length) {
-
     showResult(
-        "Please enter " + target.length + " phonemes.",
-        "failure"
+      "Please enter " + target.length + " phonemes.",
+      "failure"
     );
-
     return;
-
   }
 
   const statuses = current.map((phoneme, index) => {
-
     if (phoneme === target[index]) {
       return "correct";
     }
@@ -492,7 +440,6 @@ function checkAnswer() {
     }
 
     return "incorrect";
-
   });
 
   guesses.push({
@@ -500,43 +447,43 @@ function checkAnswer() {
     statuses
   });
 
-  const correct =
-    statuses.every(status => status === "correct");
+  const correct = statuses.every(
+    status => status === "correct"
+  );
 
   current = [];
 
   render();
 
   if (correct) {
-
     showResult(
-        "Correct! " + target.join("") + " → " + ${JSON.stringify(generatedEnglish)},
-        "success"
+      "Correct! " +
+      target.join("") +
+      " → " +
+      ${JSON.stringify(generatedEnglish)},
+      "success"
     );
 
     disableKeyboard();
-
     return;
-
   }
 
   if (guesses.length >= maxAttempts) {
-
     showResult(
-      "Activity complete. The answer was " + target.join("") + " → " + ${JSON.stringify(generatedEnglish)} + ".",
+      "Activity complete. The answer was " +
+      target.join("") +
+      " → " +
+      ${JSON.stringify(generatedEnglish)} +
+      ".",
       "failure"
     );
 
     disableKeyboard();
-
   }
-
 }
 
 function render() {
-
-  const board =
-    document.getElementById("board");
+  const board = document.getElementById("board");
 
   board.innerHTML = "";
 
@@ -545,55 +492,41 @@ function render() {
     rowIndex < maxAttempts;
     rowIndex++
   ) {
-
-    const row =
-      document.createElement("div");
+    const row = document.createElement("div");
 
     row.className = "row";
 
     const guess = guesses[rowIndex];
 
     for (
-  let tileIndex = 0;
-  tileIndex < target.length;
-  tileIndex++
-) {
-
-      const tile =
-        document.createElement("div");
+      let tileIndex = 0;
+      tileIndex < target.length;
+      tileIndex++
+    ) {
+      const tile = document.createElement("div");
 
       tile.className = "tile";
 
       if (guess) {
-
         tile.textContent =
           guess.phonemes[tileIndex];
 
         tile.classList.add(
           guess.statuses[tileIndex]
         );
-
-      } else if (
-        rowIndex === guesses.length
-      ) {
-
+      } else if (rowIndex === guesses.length) {
         tile.textContent =
           current[tileIndex] || "";
-
       }
 
       row.appendChild(tile);
-
     }
 
     board.appendChild(row);
-
   }
-
 }
 
 function showResult(message, type) {
-
   const result =
     document.getElementById("result");
 
@@ -601,64 +534,55 @@ function showResult(message, type) {
 
   result.className =
     "result " + type;
-
 }
 
 function resetGame() {
-
   current = [];
-
   guesses = [];
 
   const result =
     document.getElementById("result");
 
   result.textContent = "";
-
   result.className = "result";
 
   enableKeyboard();
 
   render();
-
 }
 
 function disableKeyboard() {
-
   document
     .querySelectorAll(".keyboard button")
     .forEach(button => {
       button.disabled = true;
     });
-
 }
 
 function enableKeyboard() {
-
   document
     .querySelectorAll(".keyboard button")
     .forEach(button => {
       button.disabled = false;
     });
-
 }
 
 render();
-
 </script>
 
 </body>
 </html>
 `;
 
-    const blob = new Blob([html], { type: "text/html" });
+    const blob = new Blob([html], {
+      type: "text/html",
+    });
 
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
 
     link.href = url;
-
     link.download = "phonoplay-wordle.html";
 
     link.click();
@@ -674,6 +598,7 @@ render();
             ? activityName
             : "Wordle Activity Builder"}
         </h1>
+
         <p>
           Create a phoneme-based Wordle activity for Speech Pathology
           classrooms.
@@ -694,6 +619,7 @@ render();
               value={difficulty}
               onChange={(event) => {
                 setDifficulty(event.target.value as Difficulty);
+
                 resetGame();
               }}
             >
@@ -715,7 +641,9 @@ render();
 
           <p>
             <strong>Hints:</strong>{" "}
-            {difficultySettings[difficulty].hints ? "Enabled" : "Disabled"}
+            {(activityId ? activityHint : difficultySettings[difficulty].hints)
+              ? "Enabled"
+              : "Disabled"}
           </p>
 
           <button onClick={resetGame}>Reset Activity</button>
@@ -723,6 +651,8 @@ render();
 
         <section className="preview-panel">
           <h2>Activity Preview</h2>
+
+          {loadingActivity && <p>Loading activity...</p>}
 
           <p>Select phonemes to build your answer.</p>
 
@@ -734,38 +664,43 @@ render();
 
               return (
                 <div className="wordle-row" key={rowIndex}>
-                  {Array.from({ length: targetWord.length }).map(
-                    (_, tileIndex) => {
-                      const phoneme =
-                        guess?.phonemes[tileIndex] ??
-                        (rowIndex === guesses.length
-                          ? currentGuess[tileIndex]
-                          : "");
+                  {Array.from({
+                    length: targetWord.length,
+                  }).map((_, tileIndex) => {
+                    const phoneme =
+                      guess?.phonemes[tileIndex] ??
+                      (rowIndex === guesses.length
+                        ? currentGuess[tileIndex]
+                        : "");
 
-                      const status = guess?.statuses[tileIndex] ?? "empty";
+                    const status = guess?.statuses[tileIndex] ?? "empty";
 
-                      return (
-                        <div
-                          className={`phoneme-tile ${status}`}
-                          key={tileIndex}
-                        >
-                          {phoneme}
-                        </div>
-                      );
-                    },
-                  )}
+                    return (
+                      <div className={`phoneme-tile ${status}`} key={tileIndex}>
+                        {phoneme}
+                      </div>
+                    );
+                  })}
                 </div>
               );
             })}
           </div>
 
           <div className="phoneme-keyboard">
-            {phonemes.map((item) => (
+            {keyboardPhonemes.map((item) => (
               <button
                 key={item.symbol}
                 onClick={() => addPhoneme(item.symbol)}
-                title={`${item.symbol} = ${item.english} as in ${item.example}`}
-                aria-label={`${item.symbol}, ${item.english} as in ${item.example}`}
+                title={
+                  item.example
+                    ? `${item.symbol} = ${item.english} as in ${item.example}`
+                    : item.symbol
+                }
+                aria-label={
+                  item.example
+                    ? `${item.symbol}, ${item.english} as in ${item.example}`
+                    : item.symbol
+                }
               >
                 <span>{item.symbol}</span>
               </button>
@@ -776,7 +711,9 @@ render();
             <button onClick={checkAnswer}>Enter</button>
           </div>
 
-          {difficultySettings[difficulty].hints && (
+          {(activityId
+            ? activityHint
+            : difficultySettings[difficulty].hints) && (
             <div className="phoneme-hint">
               <strong>Phoneme hints:</strong> Hover over or focus a phoneme to
               see its English equivalent and an example word.
@@ -799,7 +736,8 @@ render();
               <strong>Activity complete.</strong>
 
               <p>
-                The answer was /θɪŋ/ → <strong>THING</strong>
+                The answer was {targetWord.map((item) => item.phoneme).join("")}{" "}
+                → <strong>{targetWord[0]?.english}</strong>
               </p>
             </div>
           )}

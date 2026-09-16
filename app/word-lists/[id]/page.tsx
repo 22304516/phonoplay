@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
@@ -14,6 +15,17 @@ type Word = {
   }[];
 };
 
+type Activity = {
+  id: number;
+  name: string;
+  type: "WORDLE" | "WORD_SEARCH";
+  difficulty: "EASY" | "MEDIUM" | "HARD";
+  hint: boolean;
+  settings: string | null;
+  wordId: number | null;
+  word: Word | null;
+};
+
 type WordList = {
   id: number;
   name: string;
@@ -22,25 +34,17 @@ type WordList = {
   activities: Activity[];
 };
 
-type Activity = {
-  id: number;
-  name: string;
-  type: "WORDLE" | "WORD_SEARCH";
-  difficulty: "EASY" | "MEDIUM" | "HARD";
-  hint: boolean;
-  settings: string | null;
-};
-
 export default function WordListPage() {
   const params = useParams();
   const router = useRouter();
-
   const id = params.id as string;
 
   const [wordList, setWordList] = useState<WordList | null>(null);
+
   const [english, setEnglish] = useState("");
   const [phoneme, setPhoneme] = useState("");
   const [phonemes, setPhonemes] = useState("");
+
   const [activityName, setActivityName] = useState("");
   const [activityType, setActivityType] = useState<"WORDLE" | "WORD_SEARCH">(
     "WORD_SEARCH",
@@ -49,6 +53,8 @@ export default function WordListPage() {
     "EASY" | "MEDIUM" | "HARD"
   >("EASY");
   const [activityHint, setActivityHint] = useState(true);
+  const [activityWordId, setActivityWordId] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -129,6 +135,11 @@ export default function WordListPage() {
       return;
     }
 
+    if (activityType === "WORDLE" && !activityWordId) {
+      setError("Please select a target word for Wordle");
+      return;
+    }
+
     try {
       setError("");
 
@@ -155,6 +166,8 @@ export default function WordListPage() {
           type: activityType,
           difficulty: activityDifficulty,
           hint: activityHint,
+          wordId:
+            activityType === "WORDLE" ? Number(activityWordId) : undefined,
           settings,
         }),
       });
@@ -168,6 +181,7 @@ export default function WordListPage() {
       setActivityType("WORD_SEARCH");
       setActivityDifficulty("EASY");
       setActivityHint(true);
+      setActivityWordId("");
 
       await loadWordList();
     } catch (error) {
@@ -204,26 +218,6 @@ export default function WordListPage() {
     }
   }
 
-  if (loading) {
-    return (
-      <main className="page-container">
-        <p>Loading...</p>
-      </main>
-    );
-  }
-
-  if (!wordList) {
-    return (
-      <main className="page-container">
-        <p>{error || "Word list not found"}</p>
-
-        <button onClick={() => router.push("/word-lists")}>
-          Back to Word Lists
-        </button>
-      </main>
-    );
-  }
-
   async function deleteActivity(activityId: number) {
     if (!confirm("Delete this activity?")) {
       return;
@@ -253,6 +247,26 @@ export default function WordListPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <main className="page-container">
+        <p>Loading...</p>
+      </main>
+    );
+  }
+
+  if (!wordList) {
+    return (
+      <main className="page-container">
+        <p>{error || "Word list not found"}</p>
+
+        <button onClick={() => router.push("/word-lists")}>
+          Back to Word Lists
+        </button>
+      </main>
+    );
+  }
+
   return (
     <main className="page-container">
       <button type="button" onClick={() => router.push("/word-lists")}>
@@ -262,6 +276,8 @@ export default function WordListPage() {
       <h1>{wordList.name}</h1>
 
       {wordList.description && <p>{wordList.description}</p>}
+
+      {error && <p>{error}</p>}
 
       <section className="settings-card">
         <h2>Add Word</h2>
@@ -301,8 +317,6 @@ export default function WordListPage() {
         </form>
       </section>
 
-      {error && <p>{error}</p>}
-
       <section>
         <h2>Words</h2>
 
@@ -333,6 +347,7 @@ export default function WordListPage() {
           </div>
         )}
       </section>
+
       <section className="settings-card">
         <h2>Create Activity</h2>
 
@@ -351,14 +366,38 @@ export default function WordListPage() {
             Activity type
             <select
               value={activityType}
-              onChange={(event) =>
-                setActivityType(event.target.value as "WORDLE" | "WORD_SEARCH")
-              }
+              onChange={(event) => {
+                const type = event.target.value as "WORDLE" | "WORD_SEARCH";
+
+                setActivityType(type);
+
+                if (type === "WORD_SEARCH") {
+                  setActivityWordId("");
+                }
+              }}
             >
               <option value="WORD_SEARCH">Word Search</option>
               <option value="WORDLE">Wordle</option>
             </select>
           </label>
+
+          {activityType === "WORDLE" && (
+            <label>
+              Target word
+              <select
+                value={activityWordId}
+                onChange={(event) => setActivityWordId(event.target.value)}
+              >
+                <option value="">Select a word</option>
+
+                {wordList.words.map((word) => (
+                  <option key={word.id} value={word.id}>
+                    {word.english} — {word.phoneme}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
 
           <label>
             Difficulty
@@ -404,6 +443,13 @@ export default function WordListPage() {
                   {activity.type === "WORD_SEARCH" ? "Word Search" : "Wordle"} ·{" "}
                   {activity.difficulty}
                 </p>
+
+                {activity.type === "WORDLE" && activity.word && (
+                  <p>
+                    <strong>Target word:</strong> {activity.word.english} —{" "}
+                    {activity.word.phoneme}
+                  </p>
+                )}
 
                 <p>Hints: {activity.hint ? "Enabled" : "Disabled"}</p>
 

@@ -5,10 +5,7 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function GET(
-  _request: Request,
-  { params }: RouteContext
-) {
+export async function GET(_request: Request, { params }: RouteContext) {
   try {
     const { id } = await params;
     const wordListId = Number(id);
@@ -16,13 +13,24 @@ export async function GET(
     if (!Number.isInteger(wordListId)) {
       return NextResponse.json(
         { error: "Invalid word list ID" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const activities = await prisma.activity.findMany({
       where: {
         wordListId,
+      },
+      include: {
+        word: {
+          include: {
+            phonemes: {
+              orderBy: {
+                position: "asc",
+              },
+            },
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -35,23 +43,50 @@ export async function GET(
 
     return NextResponse.json(
       { error: "Failed to fetch activities" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(
   request: Request,
-  { params }: RouteContext
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
     const wordListId = Number(id);
 
     if (!Number.isInteger(wordListId)) {
-      return NextResponse.json(
-        { error: "Invalid word list ID" },
-        { status: 400 }
+      return Response.json({ error: "Invalid word list ID" }, { status: 400 });
+    }
+
+    const body = await request.json();
+
+    const { name, type, difficulty, hint, wordId, settings } = body;
+
+    if (!name || typeof name !== "string") {
+      return Response.json({ error: "Name is required" }, { status: 400 });
+    }
+
+    if (!["WORDLE", "WORD_SEARCH"].includes(type)) {
+      return Response.json({ error: "Invalid activity type" }, { status: 400 });
+    }
+
+    if (!["EASY", "MEDIUM", "HARD"].includes(difficulty)) {
+      return Response.json({ error: "Invalid difficulty" }, { status: 400 });
+    }
+
+    if (hint !== undefined && typeof hint !== "boolean") {
+      return Response.json(
+        { error: "Hint must be a boolean" },
+        { status: 400 },
+      );
+    }
+
+    if (settings !== undefined && typeof settings !== "string") {
+      return Response.json(
+        { error: "Settings must be a string" },
+        { status: 400 },
       );
     }
 
@@ -62,68 +97,52 @@ export async function POST(
     });
 
     if (!wordList) {
-      return NextResponse.json(
-        { error: "Word list not found" },
-        { status: 404 }
-      );
+      return Response.json({ error: "Word list not found" }, { status: 404 });
     }
 
-    const body = await request.json();
-    const { name, type, difficulty, hint, settings } = body;
+    let targetWordId: number | undefined;
 
-    if (!name || typeof name !== "string") {
-      return NextResponse.json(
-        { error: "Activity name is required" },
-        { status: 400 }
-      );
-    }
+    if (wordId !== undefined && wordId !== null) {
+      targetWordId = Number(wordId);
 
-    if (!["WORDLE", "WORD_SEARCH"].includes(type)) {
-      return NextResponse.json(
-        { error: "Invalid activity type" },
-        { status: 400 }
-      );
-    }
+      if (!Number.isInteger(targetWordId)) {
+        return Response.json({ error: "Invalid word ID" }, { status: 400 });
+      }
 
-    if (!["EASY", "MEDIUM", "HARD"].includes(difficulty)) {
-      return NextResponse.json(
-        { error: "Invalid difficulty" },
-        { status: 400 }
-      );
-    }
+      const word = await prisma.word.findFirst({
+        where: {
+          id: targetWordId,
+          wordListId,
+        },
+      });
 
-    if (hint !== undefined && typeof hint !== "boolean") {
-      return NextResponse.json(
-        { error: "Hint must be a boolean" },
-        { status: 400 }
-      );
-    }
-
-    if (settings !== undefined && typeof settings !== "string") {
-      return NextResponse.json(
-        { error: "Settings must be a string" },
-        { status: 400 }
-      );
+      if (!word) {
+        return Response.json(
+          { error: "Word not found in this word list" },
+          { status: 404 },
+        );
+      }
     }
 
     const activity = await prisma.activity.create({
       data: {
-        name,
+        name: name.trim(),
         type,
         difficulty,
         hint: hint ?? true,
-        settings: settings ?? null,
         wordListId,
+        wordId: targetWordId,
+        settings: settings ?? null,
       },
     });
 
-    return NextResponse.json(activity, { status: 201 });
+    return Response.json(activity, { status: 201 });
   } catch (error) {
-    console.error("Failed to create activity:", error);
+    console.error(error);
 
-    return NextResponse.json(
+    return Response.json(
       { error: "Failed to create activity" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

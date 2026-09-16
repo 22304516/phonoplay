@@ -23,6 +23,7 @@ model Word {
   wordListId  Int
   wordList    WordList  @relation(fields: [wordListId], references: [id], onDelete: Cascade)
   phonemes    Phoneme[]
+  activities  Activity[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -36,16 +37,18 @@ model Phoneme {
 }
 
 model Activity {
-  id          Int        @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   name        String
   type        ActivityType
   difficulty  Difficulty
-  hint        Boolean    @default(true)
+  hint        Boolean      @default(true)
   wordListId  Int
-  wordList    WordList   @relation(fields: [wordListId], references: [id], onDelete: Cascade)
+  wordList    WordList     @relation(fields: [wordListId], references: [id], onDelete: Cascade)
+  wordId      Int?
+  word        Word?        @relation(fields: [wordId], references: [id], onDelete: SetNull)
   settings    String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 enum ActivityType {
