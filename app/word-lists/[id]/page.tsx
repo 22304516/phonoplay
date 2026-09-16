@@ -648,6 +648,19 @@ export default function WordListPage() {
 
                     <button
                       type="button"
+                      onClick={() => {
+                        router.push(
+                          activity.type === "WORDLE"
+                            ? `/wordle?activityId=${activity.id}`
+                            : `/word-search?activityId=${activity.id}`,
+                        );
+                      }}
+                    >
+                      Launch
+                    </button>
+
+                    <button
+                      type="button"
                       onClick={() => startEditingActivity(activity)}
                     >
                       Edit
