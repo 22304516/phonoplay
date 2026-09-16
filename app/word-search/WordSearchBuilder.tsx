@@ -711,6 +711,10 @@ renderGrid();
   return (
     <div className="word-search-page">
       <section className="page-header">
+        <button type="button" onClick={() => window.history.back()}>
+          ← Back
+        </button>
+
         <h1>Word Search Activity Builder</h1>
 
         <p>Create a phoneme-based word search activity for your classroom.</p>
@@ -782,9 +786,10 @@ renderGrid();
           <p>
             <strong>Difficulty:</strong> {difficultySettings[difficulty].label}
             {" · "}
-            <strong>Hints:</strong> {activityId ? (activity?.hint ? "Enabled" : "Disabled") : "Enabled"}          
+            <strong>Hints:</strong>{" "}
+            {activityId ? (activity?.hint ? "Enabled" : "Disabled") : "Enabled"}
           </p>
-          
+
           <p>Select the letters that form one of the listed words.</p>
 
           <div

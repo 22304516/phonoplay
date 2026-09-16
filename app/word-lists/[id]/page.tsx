@@ -45,6 +45,8 @@ export default function WordListPage() {
   const [phoneme, setPhoneme] = useState("");
   const [phonemes, setPhonemes] = useState("");
 
+  const [editingWordId, setEditingWordId] = useState<number | null>(null);
+
   const [activityName, setActivityName] = useState("");
   const [activityType, setActivityType] = useState<"WORDLE" | "WORD_SEARCH">(
     "WORD_SEARCH",
@@ -138,6 +140,76 @@ export default function WordListPage() {
     } catch (error) {
       console.error(error);
       setError(error instanceof Error ? error.message : "Failed to add word");
+    }
+  }
+
+  function startEditingWord(word: Word) {
+    setEditingWordId(word.id);
+    setEnglish(word.english);
+    setPhoneme(word.phoneme);
+    setPhonemes(
+      word.phonemes
+        .sort((a, b) => a.position - b.position)
+        .map((item) => item.symbol)
+        .join(", "),
+    );
+    setError("");
+  }
+
+  function cancelEditingWord() {
+    setEditingWordId(null);
+    setEnglish("");
+    setPhoneme("");
+    setPhonemes("");
+  }
+
+  async function updateWord(event: React.FormEvent) {
+    event.preventDefault();
+
+    if (!editingWordId) {
+      return;
+    }
+
+    if (!english.trim() || !phoneme.trim()) {
+      setError("English word and phoneme are required");
+      return;
+    }
+
+    const phonemeList = phonemes
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    try {
+      setError("");
+
+      const response = await fetch(
+        `/api/word-lists/${id}/words/${editingWordId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            english: english.trim(),
+            phoneme: phoneme.trim(),
+            phonemes: phonemeList,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to update word");
+      }
+
+      cancelEditingWord();
+      await loadWordList();
+    } catch (error) {
+      console.error(error);
+      setError(
+        error instanceof Error ? error.message : "Failed to update word",
+      );
     }
   }
 
@@ -380,9 +452,9 @@ export default function WordListPage() {
       {error && <p>{error}</p>}
 
       <section className="settings-card">
-        <h2>Add Word</h2>
+        <h2>{editingWordId ? "Edit Word" : "Add Word"}</h2>
 
-        <form onSubmit={addWord}>
+        <form onSubmit={editingWordId ? updateWord : addWord}>
           <label>
             English word
             <input
@@ -413,7 +485,15 @@ export default function WordListPage() {
             />
           </label>
 
-          <button type="submit">Add Word</button>
+          <button type="submit">
+            {editingWordId ? "Save Changes" : "Add Word"}
+          </button>
+
+          {editingWordId && (
+            <button type="button" onClick={cancelEditingWord}>
+              Cancel
+            </button>
+          )}
         </form>
       </section>
 
@@ -438,6 +518,10 @@ export default function WordListPage() {
                       .join(" · ")}
                   </p>
                 )}
+
+                <button type="button" onClick={() => startEditingWord(word)}>
+                  Edit
+                </button>
 
                 <button type="button" onClick={() => deleteWord(word.id)}>
                   Delete
