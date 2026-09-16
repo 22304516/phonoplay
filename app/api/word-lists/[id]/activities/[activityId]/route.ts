@@ -8,24 +8,15 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(
-  _request: Request,
-  { params }: RouteContext
-) {
+export async function GET(_request: Request, { params }: RouteContext) {
   try {
     const { id, activityId } = await params;
 
     const wordListId = Number(id);
     const activityIdNumber = Number(activityId);
 
-    if (
-      !Number.isInteger(wordListId) ||
-      !Number.isInteger(activityIdNumber)
-    ) {
-      return NextResponse.json(
-        { error: "Invalid ID" },
-        { status: 400 }
-      );
+    if (!Number.isInteger(wordListId) || !Number.isInteger(activityIdNumber)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
 
     const activity = await prisma.activity.findFirst({
@@ -33,12 +24,30 @@ export async function GET(
         id: activityIdNumber,
         wordListId,
       },
+      include: {
+        wordList: {
+          include: {
+            words: {
+              include: {
+                phonemes: {
+                  orderBy: {
+                    position: "asc",
+                  },
+                },
+              },
+              orderBy: {
+                english: "asc",
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!activity) {
       return NextResponse.json(
         { error: "Activity not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -48,29 +57,20 @@ export async function GET(
 
     return NextResponse.json(
       { error: "Failed to fetch activity" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function PUT(
-  request: Request,
-  { params }: RouteContext
-) {
+export async function PUT(request: Request, { params }: RouteContext) {
   try {
     const { id, activityId } = await params;
 
     const wordListId = Number(id);
     const activityIdNumber = Number(activityId);
 
-    if (
-      !Number.isInteger(wordListId) ||
-      !Number.isInteger(activityIdNumber)
-    ) {
-      return NextResponse.json(
-        { error: "Invalid ID" },
-        { status: 400 }
-      );
+    if (!Number.isInteger(wordListId) || !Number.isInteger(activityIdNumber)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
 
     const existingActivity = await prisma.activity.findFirst({
@@ -83,7 +83,7 @@ export async function PUT(
     if (!existingActivity) {
       return NextResponse.json(
         { error: "Activity not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -93,35 +93,35 @@ export async function PUT(
     if (!name || typeof name !== "string") {
       return NextResponse.json(
         { error: "Activity name is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!["WORDLE", "WORD_SEARCH"].includes(type)) {
       return NextResponse.json(
         { error: "Invalid activity type" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!["EASY", "MEDIUM", "HARD"].includes(difficulty)) {
       return NextResponse.json(
         { error: "Invalid difficulty" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (hint !== undefined && typeof hint !== "boolean") {
       return NextResponse.json(
         { error: "Hint must be a boolean" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (settings !== undefined && typeof settings !== "string") {
       return NextResponse.json(
         { error: "Settings must be a string" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -144,29 +144,20 @@ export async function PUT(
 
     return NextResponse.json(
       { error: "Failed to update activity" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function DELETE(
-  _request: Request,
-  { params }: RouteContext
-) {
+export async function DELETE(_request: Request, { params }: RouteContext) {
   try {
     const { id, activityId } = await params;
 
     const wordListId = Number(id);
     const activityIdNumber = Number(activityId);
 
-    if (
-      !Number.isInteger(wordListId) ||
-      !Number.isInteger(activityIdNumber)
-    ) {
-      return NextResponse.json(
-        { error: "Invalid ID" },
-        { status: 400 }
-      );
+    if (!Number.isInteger(wordListId) || !Number.isInteger(activityIdNumber)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
 
     const existingActivity = await prisma.activity.findFirst({
@@ -179,7 +170,7 @@ export async function DELETE(
     if (!existingActivity) {
       return NextResponse.json(
         { error: "Activity not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -197,7 +188,7 @@ export async function DELETE(
 
     return NextResponse.json(
       { error: "Failed to delete activity" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
