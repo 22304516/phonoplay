@@ -40,6 +40,9 @@ export default function WordListPage() {
   const id = params.id as string;
 
   const [wordList, setWordList] = useState<WordList | null>(null);
+  const [editingWordList, setEditingWordList] = useState(false);
+  const [editWordListName, setEditWordListName] = useState("");
+  const [editWordListDescription, setEditWordListDescription] = useState("");
 
   const [english, setEnglish] = useState("");
   const [phoneme, setPhoneme] = useState("");
@@ -98,6 +101,60 @@ export default function WordListPage() {
   useEffect(() => {
     loadWordList();
   }, [id]);
+
+  function startEditingWordList() {
+    if (!wordList) {
+      return;
+    }
+
+    setEditWordListName(wordList.name);
+    setEditWordListDescription(wordList.description || "");
+    setEditingWordList(true);
+    setError("");
+  }
+
+  function cancelEditingWordList() {
+    setEditingWordList(false);
+    setEditWordListName("");
+    setEditWordListDescription("");
+  }
+
+  async function updateWordList(event: React.FormEvent) {
+    event.preventDefault();
+
+    if (!editWordListName.trim()) {
+      setError("Word list name is required");
+      return;
+    }
+
+    try {
+      setError("");
+
+      const response = await fetch(`/api/word-lists/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: editWordListName.trim(),
+          description: editWordListDescription.trim() || null,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to update word list");
+      }
+
+      cancelEditingWordList();
+      await loadWordList();
+    } catch (error) {
+      console.error(error);
+      setError(
+        error instanceof Error ? error.message : "Failed to update word list",
+      );
+    }
+  }
 
   async function addWord(event: React.FormEvent) {
     event.preventDefault();
@@ -445,10 +502,49 @@ export default function WordListPage() {
         ← Back to Word Lists
       </button>
 
-      <h1>{wordList.name}</h1>
+      {editingWordList ? (
+        <section className="settings-card">
+          <h2>Edit Word List</h2>
 
-      {wordList.description && <p>{wordList.description}</p>}
+          <form onSubmit={updateWordList}>
+            <label>
+              Name
+              <input
+                type="text"
+                value={editWordListName}
+                onChange={(event) => setEditWordListName(event.target.value)}
+              />
+            </label>
 
+            <label>
+              Description
+              <textarea
+                value={editWordListDescription}
+                onChange={(event) =>
+                  setEditWordListDescription(event.target.value)
+                }
+              />
+            </label>
+
+            <button type="submit">Save Changes</button>
+
+            <button type="button" onClick={cancelEditingWordList}>
+              Cancel
+            </button>
+          </form>
+        </section>
+      ) : (
+        <>
+          <h1>{wordList.name}</h1>
+
+          {wordList.description && <p>{wordList.description}</p>}
+
+          <button type="button" onClick={startEditingWordList}>
+            Edit Word List
+          </button>
+        </>
+      )}
+      
       {error && <p>{error}</p>}
 
       <section className="settings-card">
