@@ -106,8 +106,23 @@ export async function DELETE(
       );
     }
 
+    const existingWordList = await prisma.wordList.findUnique({
+      where: {
+        id: wordListId,
+      },
+    });
+
+    if (!existingWordList) {
+      return NextResponse.json(
+        { error: "Word list not found" },
+        { status: 404 }
+      );
+    }
+
     await prisma.wordList.delete({
-      where: { id: wordListId },
+      where: {
+        id: wordListId,
+      },
     });
 
     return NextResponse.json({

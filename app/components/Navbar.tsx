@@ -46,6 +46,10 @@ export default function Navbar() {
           Word Search
         </Link>
 
+        <Link href="/word-lists" onClick={closeMenu}>
+          Word Lists
+        </Link>
+
         <Link href="/about" onClick={closeMenu}>
           About
         </Link>
