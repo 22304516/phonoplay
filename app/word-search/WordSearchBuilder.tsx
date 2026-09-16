@@ -38,6 +38,15 @@ type DatabaseWord = {
   }[];
 };
 
+type DatabaseActivity = {
+  id: number;
+  name: string;
+  type: "WORDLE" | "WORD_SEARCH";
+  difficulty: "EASY" | "MEDIUM" | "HARD";
+  hint: boolean;
+  settings: string | null;
+};
+
 type Difficulty = "easy" | "medium" | "hard";
 
 const difficultySettings = {
@@ -70,6 +79,8 @@ export default function WordSearch({ activityId }: WordSearchProps) {
     useState<Difficulty>("easy");
   const [activityGridSize, setActivityGridSize] = useState<number>(7);
   const [activityDirection, setActivityDirection] = useState("Horizontal");
+
+  const [activity, setActivity] = useState<DatabaseActivity | null>(null);
 
   const [selected, setSelected] = useState<string[]>([]);
   const [foundWords, setFoundWords] = useState<string[]>([]);
@@ -172,12 +183,14 @@ export default function WordSearch({ activityId }: WordSearchProps) {
 
         const data = await response.json();
 
+        setActivity(data);
         setActivityName(data.name);
         setDatabaseWords(data.wordList.words);
 
         if (data.difficulty) {
           setActivityDifficulty(data.difficulty.toLowerCase() as Difficulty);
         }
+
         if (data.settings) {
           try {
             const settings = JSON.parse(data.settings);
@@ -765,10 +778,13 @@ renderGrid();
         <section className="preview-panel">
           <h2>Activity Preview</h2>
 
+          {activityId && activityName && <p>{activityName}</p>}
           <p>
             <strong>Difficulty:</strong> {difficultySettings[difficulty].label}
+            {" · "}
+            <strong>Hints:</strong> {activityId ? (activity?.hint ? "Enabled" : "Disabled") : "Enabled"}          
           </p>
-
+          
           <p>Select the letters that form one of the listed words.</p>
 
           <div
@@ -795,11 +811,21 @@ renderGrid();
                     key={cell}
                     className={`search-cell ${isSelected ? "selected" : ""}`}
                     aria-pressed={isSelected}
-                    title={phonemeHints[letter] || letter}
+                    title={
+                      !activityId || activity?.hint
+                        ? phonemeHints[letter] || letter
+                        : undefined
+                    }
                     onClick={() => selectCell(rowIndex, columnIndex)}
-                    aria-label={`Row ${rowIndex + 1}, Column ${
-                      columnIndex + 1
-                    }, ${letter}, ${phonemeHints[letter] || "phoneme"}`}
+                    aria-label={
+                      !activityId || activity?.hint
+                        ? `Row ${rowIndex + 1}, Column ${
+                            columnIndex + 1
+                          }, ${letter}, ${phonemeHints[letter] || "phoneme"}`
+                        : `Row ${rowIndex + 1}, Column ${
+                            columnIndex + 1
+                          }, ${letter}`
+                    }
                   >
                     {letter}
                   </button>
