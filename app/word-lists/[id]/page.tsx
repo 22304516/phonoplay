@@ -19,6 +19,16 @@ type WordList = {
   name: string;
   description: string | null;
   words: Word[];
+  activities: Activity[];
+};
+
+type Activity = {
+  id: number;
+  name: string;
+  type: "WORDLE" | "WORD_SEARCH";
+  difficulty: "EASY" | "MEDIUM" | "HARD";
+  hint: boolean;
+  settings: string | null;
 };
 
 export default function WordListPage() {
@@ -31,6 +41,14 @@ export default function WordListPage() {
   const [english, setEnglish] = useState("");
   const [phoneme, setPhoneme] = useState("");
   const [phonemes, setPhonemes] = useState("");
+  const [activityName, setActivityName] = useState("");
+  const [activityType, setActivityType] = useState<"WORDLE" | "WORD_SEARCH">(
+    "WORD_SEARCH",
+  );
+  const [activityDifficulty, setActivityDifficulty] = useState<
+    "EASY" | "MEDIUM" | "HARD"
+  >("EASY");
+  const [activityHint, setActivityHint] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -103,6 +121,63 @@ export default function WordListPage() {
     }
   }
 
+  async function addActivity(event: React.FormEvent) {
+    event.preventDefault();
+
+    if (!activityName.trim()) {
+      setError("Activity name is required");
+      return;
+    }
+
+    try {
+      setError("");
+
+      const settings =
+        activityType === "WORD_SEARCH"
+          ? JSON.stringify({
+              gridSize:
+                activityDifficulty === "EASY"
+                  ? 7
+                  : activityDifficulty === "MEDIUM"
+                    ? 8
+                    : 9,
+              direction: "horizontal",
+            })
+          : undefined;
+
+      const response = await fetch(`/api/word-lists/${id}/activities`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: activityName.trim(),
+          type: activityType,
+          difficulty: activityDifficulty,
+          hint: activityHint,
+          settings,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to create activity");
+      }
+
+      setActivityName("");
+      setActivityType("WORD_SEARCH");
+      setActivityDifficulty("EASY");
+      setActivityHint(true);
+
+      await loadWordList();
+    } catch (error) {
+      console.error(error);
+      setError(
+        error instanceof Error ? error.message : "Failed to create activity",
+      );
+    }
+  }
+
   async function deleteWord(wordId: number) {
     if (!confirm("Delete this word?")) {
       return;
@@ -147,6 +222,35 @@ export default function WordListPage() {
         </button>
       </main>
     );
+  }
+
+  async function deleteActivity(activityId: number) {
+    if (!confirm("Delete this activity?")) {
+      return;
+    }
+
+    try {
+      setError("");
+
+      const response = await fetch(
+        `/api/word-lists/${id}/activities/${activityId}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to delete activity");
+      }
+
+      await loadWordList();
+    } catch (error) {
+      console.error(error);
+      setError(
+        error instanceof Error ? error.message : "Failed to delete activity",
+      );
+    }
   }
 
   return (
@@ -222,6 +326,91 @@ export default function WordListPage() {
                 )}
 
                 <button type="button" onClick={() => deleteWord(word.id)}>
+                  Delete
+                </button>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+      <section className="settings-card">
+        <h2>Create Activity</h2>
+
+        <form onSubmit={addActivity}>
+          <label>
+            Activity name
+            <input
+              type="text"
+              value={activityName}
+              onChange={(event) => setActivityName(event.target.value)}
+              placeholder="e.g. Initial /θ/ Word Search"
+            />
+          </label>
+
+          <label>
+            Activity type
+            <select
+              value={activityType}
+              onChange={(event) =>
+                setActivityType(event.target.value as "WORDLE" | "WORD_SEARCH")
+              }
+            >
+              <option value="WORD_SEARCH">Word Search</option>
+              <option value="WORDLE">Wordle</option>
+            </select>
+          </label>
+
+          <label>
+            Difficulty
+            <select
+              value={activityDifficulty}
+              onChange={(event) =>
+                setActivityDifficulty(
+                  event.target.value as "EASY" | "MEDIUM" | "HARD",
+                )
+              }
+            >
+              <option value="EASY">Easy</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HARD">Hard</option>
+            </select>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              checked={activityHint}
+              onChange={(event) => setActivityHint(event.target.checked)}
+            />
+            Allow hints
+          </label>
+
+          <button type="submit">Create Activity</button>
+        </form>
+      </section>
+
+      <section>
+        <h2>Activities</h2>
+
+        {wordList.activities.length === 0 ? (
+          <p>No activities in this list yet.</p>
+        ) : (
+          <div>
+            {wordList.activities.map((activity) => (
+              <article key={activity.id} className="settings-card">
+                <h3>{activity.name}</h3>
+
+                <p>
+                  {activity.type === "WORD_SEARCH" ? "Word Search" : "Wordle"} ·{" "}
+                  {activity.difficulty}
+                </p>
+
+                <p>Hints: {activity.hint ? "Enabled" : "Disabled"}</p>
+
+                <button
+                  type="button"
+                  onClick={() => deleteActivity(activity.id)}
+                >
                   Delete
                 </button>
               </article>
