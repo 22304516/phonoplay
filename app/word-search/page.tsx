@@ -553,7 +553,7 @@ renderGrid();
 
     URL.revokeObjectURL(url);
   }
-  
+
   return (
     <div className="word-search-page">
       <section className="page-header">
