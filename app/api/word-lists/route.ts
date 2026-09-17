@@ -19,7 +19,7 @@ export async function GET() {
 
     return NextResponse.json(
       { error: "Failed to fetch word lists" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -27,21 +27,19 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
     const { name, description } = body;
 
-    if (!name || typeof name !== "string") {
-      return NextResponse.json(
-        { error: "Name is required" },
-        { status: 400 }
-      );
+    if (typeof name !== "string" || name.trim() === "") {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
     const wordList = await prisma.wordList.create({
       data: {
-        name,
+        name: name.trim(),
         description:
-          typeof description === "string" ? description : null,
+          typeof description === "string" && description.trim() !== ""
+            ? description.trim()
+            : null,
       },
     });
 
@@ -51,7 +49,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       { error: "Failed to create word list" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
