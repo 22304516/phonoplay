@@ -99,7 +99,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
     const body = await request.json();
     const { name, type, difficulty, hint, settings, wordId } = body;
 
-    if (!name || typeof name !== "string") {
+    if (typeof name !== "string" || name.trim() === "") {
       return NextResponse.json(
         { error: "Activity name is required" },
         { status: 400 },
@@ -134,11 +134,29 @@ export async function PUT(request: Request, { params }: RouteContext) {
       );
     }
 
+    if (typeof settings === "string") {
+      try {
+        JSON.parse(settings);
+      } catch {
+        return NextResponse.json(
+          { error: "Settings must contain valid JSON" },
+          { status: 400 },
+        );
+      }
+    }
+
     let targetWordId: number | null = null;
 
     if (type === "WORDLE" && (wordId === undefined || wordId === null)) {
       return NextResponse.json(
         { error: "Wordle activities require a target word" },
+        { status: 400 },
+      );
+    }
+
+    if (type === "WORD_SEARCH" && wordId !== undefined && wordId !== null) {
+      return NextResponse.json(
+        { error: "Word Search activities cannot have a target word" },
         { status: 400 },
       );
     }
@@ -208,7 +226,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
         id: activityIdNumber,
       },
       data: {
-        name,
+        name: name.trim(),
         type,
         difficulty,
         hint: hint ?? true,
