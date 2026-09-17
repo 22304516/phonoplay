@@ -88,8 +88,21 @@ export async function PUT(request: Request, { params }: RouteContext) {
     const body = await request.json();
     const { name, description } = body;
 
-    if (!name || typeof name !== "string") {
+    if (typeof name !== "string" || name.trim() === "") {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    }
+
+    const existingWordList = await prisma.wordList.findUnique({
+      where: {
+        id: wordListId,
+      },
+    });
+
+    if (!existingWordList) {
+      return NextResponse.json(
+        { error: "Word list not found" },
+        { status: 404 },
+      );
     }
 
     const wordList = await prisma.wordList.update({
@@ -97,8 +110,11 @@ export async function PUT(request: Request, { params }: RouteContext) {
         id: wordListId,
       },
       data: {
-        name,
-        description: typeof description === "string" ? description : null,
+        name: name.trim(),
+        description:
+          typeof description === "string" && description.trim() !== ""
+            ? description.trim()
+            : null,
       },
     });
 
