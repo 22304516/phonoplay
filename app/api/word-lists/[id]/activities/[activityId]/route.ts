@@ -134,14 +134,25 @@ export async function PUT(request: Request, { params }: RouteContext) {
       );
     }
 
+    let targetWordId: number | null = null;
+
+    if (type === "WORDLE" && (wordId === undefined || wordId === null)) {
+      return NextResponse.json(
+        { error: "Wordle activities require a target word" },
+        { status: 400 },
+      );
+    }
+
     if (wordId !== undefined && wordId !== null) {
-      if (!Number.isInteger(wordId)) {
+      targetWordId = Number(wordId);
+
+      if (!Number.isInteger(targetWordId)) {
         return NextResponse.json({ error: "Invalid word ID" }, { status: 400 });
       }
 
       const word = await prisma.word.findFirst({
         where: {
-          id: wordId,
+          id: targetWordId,
           wordListId,
         },
       });
@@ -149,6 +160,44 @@ export async function PUT(request: Request, { params }: RouteContext) {
       if (!word) {
         return NextResponse.json(
           { error: "Word does not belong to this word list" },
+          { status: 400 },
+        );
+      }
+    }
+
+    if (type === "WORD_SEARCH") {
+      const gridSize =
+        difficulty === "EASY" ? 7 : difficulty === "MEDIUM" ? 8 : 9;
+
+      const wordList = await prisma.wordList.findUnique({
+        where: {
+          id: wordListId,
+        },
+        include: {
+          words: {
+            include: {
+              phonemes: true,
+            },
+          },
+        },
+      });
+
+      if (!wordList) {
+        return NextResponse.json(
+          { error: "Word list not found" },
+          { status: 404 },
+        );
+      }
+
+      const usableWords = wordList.words.filter(
+        (word) => word.phonemes.length <= gridSize,
+      );
+
+      if (usableWords.length === 0) {
+        return NextResponse.json(
+          {
+            error: `No words in this word list can fit in a ${gridSize}×${gridSize} grid.`,
+          },
           { status: 400 },
         );
       }
@@ -164,7 +213,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
         difficulty,
         hint: hint ?? true,
         settings: settings ?? null,
-        wordId: type === "WORDLE" ? (wordId ?? null) : null,
+        wordId: type === "WORDLE" ? targetWordId : null,
       },
     });
 
