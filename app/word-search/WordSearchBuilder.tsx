@@ -199,9 +199,7 @@ export default function WordSearch({ activityId }: WordSearchProps) {
       try {
         setLoadingActivity(true);
 
-        const response = await fetch(
-          `/api/word-lists/7/activities/${activityId}`,
-        );
+        const response = await fetch(`/api/activities/${activityId}`);
         if (!response.ok) {
           throw new Error("Failed to load activity");
         }

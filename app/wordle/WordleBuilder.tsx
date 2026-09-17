@@ -135,9 +135,7 @@ export default function Wordle({ activityId }: WordleProps) {
       try {
         setLoadingActivity(true);
 
-        const response = await fetch(
-          `/api/word-lists/7/activities/${activityId}`,
-        );
+        const response = await fetch(`/api/activities/${activityId}`);
 
         if (!response.ok) {
           throw new Error("Failed to load activity");
@@ -605,7 +603,7 @@ render();
         <button type="button" onClick={() => window.history.back()}>
           ← Back
         </button>
-        
+
         <h1>
           {activityId && activityName
             ? activityName
