@@ -384,13 +384,20 @@ export default function WordListPage() {
     }
 
     if (editActivityType === "WORD_SEARCH") {
-      const invalidWord = wordList?.words.find(
-        (word) => word.phonemes.length > editActivityGridSize,
+      const gridSize =
+        editActivityDifficulty === "EASY"
+          ? 7
+          : editActivityDifficulty === "MEDIUM"
+            ? 8
+            : 9;
+
+      const usableWord = wordList?.words.find(
+        (word) => word.phonemes.length <= gridSize,
       );
 
-      if (invalidWord) {
+      if (!usableWord) {
         setError(
-          `"${invalidWord.english}" has ${invalidWord.phonemes.length} phonemes and cannot fit in a ${editActivityGridSize} × ${editActivityGridSize} grid.`,
+          `No words in this word list can fit in a ${gridSize} × ${gridSize} grid.`,
         );
         return;
       }
