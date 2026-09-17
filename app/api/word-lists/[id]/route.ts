@@ -138,6 +138,21 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
       );
     }
 
+    const activity = await prisma.activity.findFirst({
+      where: {
+        wordListId,
+      },
+    });
+
+    if (activity) {
+      return NextResponse.json(
+        {
+          error: `Cannot delete this word list because it contains activity "${activity.name}".`,
+        },
+        { status: 409 },
+      );
+    }
+
     await prisma.wordList.delete({
       where: {
         id: wordListId,
