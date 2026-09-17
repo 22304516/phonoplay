@@ -292,12 +292,6 @@ export default function WordListPage() {
       const settings =
         activityType === "WORD_SEARCH"
           ? JSON.stringify({
-              gridSize:
-                activityDifficulty === "EASY"
-                  ? 7
-                  : activityDifficulty === "MEDIUM"
-                    ? 8
-                    : 9,
               direction: "horizontal",
             })
           : undefined;
@@ -413,7 +407,6 @@ export default function WordListPage() {
       const settings =
         editActivityType === "WORD_SEARCH"
           ? JSON.stringify({
-              gridSize: editActivityGridSize,
               direction: editActivityDirection,
             })
           : undefined;
@@ -714,20 +707,11 @@ export default function WordListPage() {
             Difficulty
             <select
               value={editActivityDifficulty}
-              onChange={(event) => {
-                const difficulty = event.target.value as
-                  | "EASY"
-                  | "MEDIUM"
-                  | "HARD";
-
-                setEditActivityDifficulty(difficulty);
-
-                if (editActivityType === "WORD_SEARCH") {
-                  setEditActivityGridSize(
-                    difficulty === "EASY" ? 7 : difficulty === "MEDIUM" ? 8 : 9,
-                  );
-                }
-              }}
+              onChange={(event) =>
+                setEditActivityDifficulty(
+                  event.target.value as "EASY" | "MEDIUM" | "HARD",
+                )
+              }
             >
               <option value="EASY">Easy</option>
               <option value="MEDIUM">Medium</option>
@@ -737,20 +721,6 @@ export default function WordListPage() {
 
           {editActivityType === "WORD_SEARCH" && (
             <>
-              <label>
-                Grid size
-                <select
-                  value={editActivityGridSize}
-                  onChange={(event) =>
-                    setEditActivityGridSize(Number(event.target.value))
-                  }
-                >
-                  <option value={7}>7 × 7</option>
-                  <option value={8}>8 × 8</option>
-                  <option value={9}>9 × 9</option>
-                </select>
-              </label>
-
               <label>
                 Direction
                 <select

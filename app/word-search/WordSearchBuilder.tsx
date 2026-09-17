@@ -77,7 +77,6 @@ export default function WordSearch({ activityId }: WordSearchProps) {
   const [loadingActivity, setLoadingActivity] = useState(false);
   const [activityDifficulty, setActivityDifficulty] =
     useState<Difficulty>("easy");
-  const [activityGridSize, setActivityGridSize] = useState<number>(7);
   const [activityDirection, setActivityDirection] = useState("Horizontal");
 
   const [activity, setActivity] = useState<DatabaseActivity | null>(null);
@@ -125,9 +124,10 @@ export default function WordSearch({ activityId }: WordSearchProps) {
         ];
 
   const activeGridSize = activityId
-    ? activityGridSize
+    ? difficultySettings[activityDifficulty].gridSize
     : difficultySettings[difficulty].gridSize;
 
+  console.log("GRID:", activityId, activityDifficulty, activeGridSize);
   const activeGrid = activityId
     ? (() => {
         const fallbackPhonemes = [
@@ -147,44 +147,36 @@ export default function WordSearch({ activityId }: WordSearchProps) {
           () => Array(activeGridSize).fill(null),
         );
 
-        for (const word of words) {
-          if (word.phonemes.length > activeGridSize) {
-            continue;
-          }
+        const wordsToPlace = words.filter(
+          (word) => word.phonemes.length <= activeGridSize,
+        );
 
-          let placed = false;
+        wordsToPlace.forEach((word, wordIndex) => {
+          const row =
+            wordsToPlace.length === 1
+              ? Math.floor(activeGridSize / 2)
+              : Math.floor(
+                  (wordIndex * (activeGridSize - 1)) /
+                    (wordsToPlace.length - 1),
+                );
 
-          for (let row = 0; row < activeGridSize && !placed; row++) {
-            for (
-              let column = 0;
-              column <= activeGridSize - word.phonemes.length;
-              column++
-            ) {
-              const canPlace = word.phonemes.every(
-                (_, phonemeIndex) =>
-                  newGrid[row][column + phonemeIndex] === null,
-              );
+          const maxStartColumn = activeGridSize - word.phonemes.length;
 
-              if (!canPlace) {
-                continue;
-              }
+          const column =
+            maxStartColumn === 0 ? 0 : (wordIndex * 2) % (maxStartColumn + 1);
 
-              word.phonemes.forEach((phoneme, phonemeIndex) => {
-                newGrid[row][column + phonemeIndex] = phoneme;
-              });
-
-              placed = true;
-              break;
-            }
-          }
-        }
+          word.phonemes.forEach((phoneme, phonemeIndex) => {
+            newGrid[row][column + phonemeIndex] = phoneme;
+          });
+        });
 
         return newGrid.map((row, rowIndex) =>
           row.map(
             (cell, columnIndex) =>
               cell ??
               fallbackPhonemes[
-                (rowIndex + columnIndex) % fallbackPhonemes.length
+                (rowIndex * activeGridSize + columnIndex) %
+                  fallbackPhonemes.length
               ],
           ),
         );
@@ -207,30 +199,34 @@ export default function WordSearch({ activityId }: WordSearchProps) {
 
         const data = await response.json();
 
+        console.log("LOADED ACTIVITY:", data);
+        console.log("DIFFICULTY:", data.difficulty);
+        console.log("SETTINGS:", data.settings);
+
         setActivity(data);
         setActivityName(data.name);
         setDatabaseWords(data.wordList.words);
 
         if (data.difficulty) {
-          setActivityDifficulty(data.difficulty.toLowerCase() as Difficulty);
-        }
+          const loadedDifficulty = data.difficulty.toLowerCase() as Difficulty;
 
-        if (data.settings) {
-          try {
-            const settings = JSON.parse(data.settings);
+          setActivityDifficulty(loadedDifficulty);
 
-            if (settings.gridSize) {
-              setActivityGridSize(settings.gridSize);
+          let loadedGridSize = difficultySettings[loadedDifficulty].gridSize;
+
+          if (data.settings) {
+            try {
+              const settings = JSON.parse(data.settings);
+
+              if (settings.direction) {
+                setActivityDirection(
+                  settings.direction.charAt(0).toUpperCase() +
+                    settings.direction.slice(1),
+                );
+              }
+            } catch (error) {
+              console.error("Failed to parse activity settings:", error);
             }
-
-            if (settings.direction) {
-              setActivityDirection(
-                settings.direction.charAt(0).toUpperCase() +
-                  settings.direction.slice(1),
-              );
-            }
-          } catch (error) {
-            console.error("Failed to parse activity settings:", error);
           }
         }
       } catch (error) {
