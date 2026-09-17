@@ -64,7 +64,7 @@ export async function POST(
 
     const { name, type, difficulty, hint, wordId, settings } = body;
 
-    if (!name || typeof name !== "string") {
+    if (typeof name !== "string" || name.trim() === "") {
       return Response.json({ error: "Name is required" }, { status: 400 });
     }
 
@@ -90,6 +90,17 @@ export async function POST(
       );
     }
 
+    if (typeof settings === "string") {
+      try {
+        JSON.parse(settings);
+      } catch {
+        return Response.json(
+          { error: "Settings must contain valid JSON" },
+          { status: 400 },
+        );
+      }
+    }
+
     const wordList = await prisma.wordList.findUnique({
       where: {
         id: wordListId,
@@ -112,6 +123,13 @@ export async function POST(
     if (type === "WORDLE" && (wordId === undefined || wordId === null)) {
       return Response.json(
         { error: "Wordle activities require a target word" },
+        { status: 400 },
+      );
+    }
+
+    if (type === "WORD_SEARCH" && wordId !== undefined && wordId !== null) {
+      return Response.json(
+        { error: "Word Search activities cannot have a target word" },
         { status: 400 },
       );
     }
