@@ -279,6 +279,7 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     return NextResponse.json({
       message: "Activity deleted successfully",
+      activityId: activityIdNumber,
     });
   } catch (error) {
     console.error("Failed to delete activity:", error);
