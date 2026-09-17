@@ -96,6 +96,22 @@ export async function PUT(request: Request, { params }: RouteContext) {
       );
     }
 
+    const wordleActivity = await prisma.activity.findFirst({
+      where: {
+        wordId: wordIdNumber,
+        type: "WORDLE",
+      },
+    });
+
+    if (wordleActivity) {
+      return NextResponse.json(
+        {
+          error: `Cannot edit this word because it is being used as the target word for "${wordleActivity.name}".`,
+        },
+        { status: 409 },
+      );
+    }
+
     const updatedWord = await prisma.$transaction(async (tx) => {
       await tx.phoneme.deleteMany({
         where: {
