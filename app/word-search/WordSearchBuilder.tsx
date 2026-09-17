@@ -84,6 +84,7 @@ export default function WordSearch({ activityId }: WordSearchProps) {
 
   const [selected, setSelected] = useState<string[]>([]);
   const [foundWords, setFoundWords] = useState<string[]>([]);
+  const [foundCells, setFoundCells] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
 
   const words =
@@ -290,6 +291,7 @@ export default function WordSearch({ activityId }: WordSearchProps) {
 
     if (matchingWord) {
       setFoundWords([...foundWords, matchingWord.english]);
+      setFoundCells([...foundCells, ...selected]);
       setSelected([]);
     } else {
       alert("That selection does not match a phoneme word.");
@@ -299,6 +301,7 @@ export default function WordSearch({ activityId }: WordSearchProps) {
   function resetPuzzle() {
     setSelected([]);
     setFoundWords([]);
+    setFoundCells([]);
   }
 
   function generateHTML() {
@@ -403,6 +406,11 @@ h1 {
 .cell.selected {
   background: #bfdbfe;
   border-color: #2563eb;
+}
+
+.cell.found {
+  background: #dcfce7;
+  border-color: #22c55e;
 }
 
 .controls {
@@ -542,6 +550,8 @@ let selected = [];
 
 let foundWords = [];
 
+let foundCells = [];
+
 function renderWords() {
 
   const container =
@@ -609,9 +619,20 @@ function renderGrid() {
         isSelected
       );
 
-      if (isSelected) {
-        button.classList.add("selected");
-      }
+      const isFound =
+  foundCells.some(
+    cell =>
+      cell.row === rowIndex &&
+      cell.column === columnIndex
+  );
+
+    if (isSelected) {
+    button.classList.add("selected");
+    }
+
+    if (isFound) {
+    button.classList.add("found");
+    }
 
       button.onclick = function() {
         toggleCell(rowIndex, columnIndex);
@@ -626,6 +647,16 @@ function renderGrid() {
 }
 
 function toggleCell(row, column) {
+    const isFound =
+        foundCells.some(
+            cell =>
+            cell.row === row &&
+            cell.column === column
+        );
+
+        if (isFound) {
+        return;
+        }
 
   const index =
     selected.findIndex(
@@ -705,8 +736,15 @@ function checkSelection() {
 
     foundWords.push(wordIndex);
 
+    foundCells.push(
+    ...selected.map(cell => ({
+        row: cell.row,
+        column: cell.column
+    }))
+    );
+
     result.textContent =
-      "Correct! " +
+    "Correct! " +
       words[wordIndex].phoneme +
       " → " +
       words[wordIndex].english;
@@ -734,9 +772,11 @@ function checkSelection() {
 
 function resetGame() {
 
-  selected = [];
+    selected = [];
 
-  foundWords = [];
+    foundWords = [];
+
+    foundCells = [];
 
   const result =
     document.getElementById("result");
@@ -876,11 +916,14 @@ renderGrid();
 
                 const cell = `${rowIndex}-${columnIndex}`;
                 const isSelected = selected.includes(cell);
+                const isFound = foundCells.includes(cell);
 
                 return (
                   <button
                     key={cell}
-                    className={`search-cell ${isSelected ? "selected" : ""}`}
+                    className={`search-cell ${
+                      isSelected ? "selected" : ""
+                    } ${isFound ? "found" : ""}`}
                     aria-pressed={isSelected}
                     title={
                       !activityId || activity?.hint

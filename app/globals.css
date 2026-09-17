@@ -489,6 +489,11 @@ li {
   border-color: #2563eb;
 }
 
+.search-cell.found {
+  background: #dcfce7;
+  border-color: #22c55e;
+}
+
 .word-search-controls {
   display: flex;
   justify-content: center;
