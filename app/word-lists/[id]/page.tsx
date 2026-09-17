@@ -73,6 +73,9 @@ export default function WordListPage() {
   >("EASY");
   const [editActivityHint, setEditActivityHint] = useState(true);
   const [editActivityWordId, setEditActivityWordId] = useState("");
+  const [editActivityGridSize, setEditActivityGridSize] = useState(7);
+  const [editActivityDirection, setEditActivityDirection] =
+    useState("horizontal");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -342,6 +345,24 @@ export default function WordListPage() {
     setEditActivityDifficulty(activity.difficulty);
     setEditActivityHint(activity.hint);
     setEditActivityWordId(activity.wordId?.toString() ?? "");
+    if (activity.settings) {
+      try {
+        const settings = JSON.parse(activity.settings);
+
+        if (settings.gridSize) {
+          setEditActivityGridSize(settings.gridSize);
+        }
+
+        if (settings.direction) {
+          setEditActivityDirection(settings.direction);
+        }
+      } catch (error) {
+        console.error("Failed to parse activity settings:", error);
+      }
+    } else {
+      setEditActivityGridSize(7);
+      setEditActivityDirection("horizontal");
+    }
     setError("");
   }
 
@@ -352,6 +373,8 @@ export default function WordListPage() {
     setEditActivityDifficulty("EASY");
     setEditActivityHint(true);
     setEditActivityWordId("");
+    setEditActivityGridSize(7);
+    setEditActivityDirection("horizontal");
   }
 
   async function updateActivity(event: React.FormEvent) {
@@ -377,13 +400,8 @@ export default function WordListPage() {
       const settings =
         editActivityType === "WORD_SEARCH"
           ? JSON.stringify({
-              gridSize:
-                editActivityDifficulty === "EASY"
-                  ? 7
-                  : editActivityDifficulty === "MEDIUM"
-                    ? 8
-                    : 9,
-              direction: "horizontal",
+              gridSize: editActivityGridSize,
+              direction: editActivityDirection,
             })
           : undefined;
 
@@ -682,18 +700,57 @@ export default function WordListPage() {
           <label>
             Difficulty
             <select
-              value={activityDifficulty}
-              onChange={(event) =>
-                setActivityDifficulty(
-                  event.target.value as "EASY" | "MEDIUM" | "HARD",
-                )
-              }
+              value={editActivityDifficulty}
+              onChange={(event) => {
+                const difficulty = event.target.value as
+                  | "EASY"
+                  | "MEDIUM"
+                  | "HARD";
+
+                setEditActivityDifficulty(difficulty);
+
+                if (editActivityType === "WORD_SEARCH") {
+                  setEditActivityGridSize(
+                    difficulty === "EASY" ? 7 : difficulty === "MEDIUM" ? 8 : 9,
+                  );
+                }
+              }}
             >
               <option value="EASY">Easy</option>
               <option value="MEDIUM">Medium</option>
               <option value="HARD">Hard</option>
             </select>
           </label>
+
+          {editActivityType === "WORD_SEARCH" && (
+            <>
+              <label>
+                Grid size
+                <select
+                  value={editActivityGridSize}
+                  onChange={(event) =>
+                    setEditActivityGridSize(Number(event.target.value))
+                  }
+                >
+                  <option value={7}>7 × 7</option>
+                  <option value={8}>8 × 8</option>
+                  <option value={9}>9 × 9</option>
+                </select>
+              </label>
+
+              <label>
+                Direction
+                <select
+                  value={editActivityDirection}
+                  onChange={(event) =>
+                    setEditActivityDirection(event.target.value)
+                  }
+                >
+                  <option value="horizontal">Horizontal</option>
+                </select>
+              </label>
+            </>
+          )}
 
           <label>
             <input
