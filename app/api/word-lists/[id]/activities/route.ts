@@ -94,6 +94,13 @@ export async function POST(
       where: {
         id: wordListId,
       },
+      include: {
+        words: {
+          include: {
+            phonemes: true,
+          },
+        },
+      },
     });
 
     if (!wordList) {
@@ -120,6 +127,24 @@ export async function POST(
         return Response.json(
           { error: "Word not found in this word list" },
           { status: 404 },
+        );
+      }
+    }
+
+    if (type === "WORD_SEARCH") {
+      const gridSize =
+        difficulty === "EASY" ? 7 : difficulty === "MEDIUM" ? 8 : 9;
+
+      const usableWords = wordList.words.filter(
+        (word) => word.phonemes.length <= gridSize,
+      );
+
+      if (usableWords.length === 0) {
+        return NextResponse.json(
+          {
+            error: `No words in this word list can fit in a ${gridSize}×${gridSize} grid.`,
+          },
+          { status: 400 },
         );
       }
     }
