@@ -389,6 +389,19 @@ export default function WordListPage() {
       return;
     }
 
+    if (editActivityType === "WORD_SEARCH") {
+      const invalidWord = wordList?.words.find(
+        (word) => word.phonemes.length > editActivityGridSize,
+      );
+
+      if (invalidWord) {
+        setError(
+          `"${invalidWord.english}" has ${invalidWord.phonemes.length} phonemes and cannot fit in a ${editActivityGridSize} × ${editActivityGridSize} grid.`,
+        );
+        return;
+      }
+    }
+
     if (editActivityType === "WORDLE" && !editActivityWordId) {
       setError("Please select a target word for Wordle");
       return;

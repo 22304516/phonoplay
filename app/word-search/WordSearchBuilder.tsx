@@ -141,27 +141,52 @@ export default function WordSearch({ activityId }: WordSearchProps) {
           "/ŋ/",
         ];
 
-        const newGrid = Array.from({ length: activeGridSize }, (_, row) =>
-          Array.from(
-            { length: activeGridSize },
-            (_, column) =>
-              fallbackPhonemes[(row + column) % fallbackPhonemes.length],
-          ),
+        const newGrid: (string | null)[][] = Array.from(
+          { length: activeGridSize },
+          () => Array(activeGridSize).fill(null),
         );
 
-        words.forEach((word, index) => {
+        for (const word of words) {
           if (word.phonemes.length > activeGridSize) {
-            return;
+            continue;
           }
 
-          const row = index % activeGridSize;
+          let placed = false;
 
-          word.phonemes.forEach((phoneme, column) => {
-            newGrid[row][column] = phoneme;
-          });
-        });
+          for (let row = 0; row < activeGridSize && !placed; row++) {
+            for (
+              let column = 0;
+              column <= activeGridSize - word.phonemes.length;
+              column++
+            ) {
+              const canPlace = word.phonemes.every(
+                (_, phonemeIndex) =>
+                  newGrid[row][column + phonemeIndex] === null,
+              );
 
-        return newGrid;
+              if (!canPlace) {
+                continue;
+              }
+
+              word.phonemes.forEach((phoneme, phonemeIndex) => {
+                newGrid[row][column + phonemeIndex] = phoneme;
+              });
+
+              placed = true;
+              break;
+            }
+          }
+        }
+
+        return newGrid.map((row, rowIndex) =>
+          row.map(
+            (cell, columnIndex) =>
+              cell ??
+              fallbackPhonemes[
+                (rowIndex + columnIndex) % fallbackPhonemes.length
+              ],
+          ),
+        );
       })()
     : grid;
 
@@ -230,9 +255,25 @@ export default function WordSearch({ activityId }: WordSearchProps) {
 
     if (selected.includes(cell)) {
       setSelected(selected.filter((item) => item !== cell));
-    } else {
-      setSelected([...selected, cell]);
+      return;
     }
+
+    if (selected.length === 0) {
+      setSelected([cell]);
+      return;
+    }
+
+    const lastCell = selected[selected.length - 1];
+    const [lastRow, lastColumn] = lastCell.split("-").map(Number);
+
+    const isNextHorizontalCell = row === lastRow && column === lastColumn + 1;
+
+    if (!isNextHorizontalCell) {
+      alert("Select adjacent cells from left to right.");
+      return;
+    }
+
+    setSelected([...selected, cell]);
   }
 
   function checkSelection() {
@@ -599,14 +640,41 @@ function toggleCell(row, column) {
 
     selected.splice(index, 1);
 
-  } else {
+    renderGrid();
+    return;
+
+  }
+
+  if (selected.length === 0) {
 
     selected.push({
       row: row,
       column: column
     });
 
+    renderGrid();
+    return;
+
   }
+
+  const lastCell =
+    selected[selected.length - 1];
+
+  const isNextHorizontalCell =
+    row === lastCell.row &&
+    column === lastCell.column + 1;
+
+  if (!isNextHorizontalCell) {
+
+    alert("Select adjacent cells from left to right.");
+    return;
+
+  }
+
+  selected.push({
+    row: row,
+    column: column
+  });
 
   renderGrid();
 
