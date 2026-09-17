@@ -109,6 +109,13 @@ export async function POST(
 
     let targetWordId: number | undefined;
 
+    if (type === "WORDLE" && (wordId === undefined || wordId === null)) {
+      return Response.json(
+        { error: "Wordle activities require a target word" },
+        { status: 400 },
+      );
+    }
+
     if (wordId !== undefined && wordId !== null) {
       targetWordId = Number(wordId);
 
