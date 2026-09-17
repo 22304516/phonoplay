@@ -5,10 +5,7 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function GET(
-  _request: Request,
-  { params }: RouteContext
-) {
+export async function GET(_request: Request, { params }: RouteContext) {
   try {
     const { id } = await params;
     const wordListId = Number(id);
@@ -16,7 +13,7 @@ export async function GET(
     if (!Number.isInteger(wordListId)) {
       return NextResponse.json(
         { error: "Invalid word list ID" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -40,15 +37,12 @@ export async function GET(
 
     return NextResponse.json(
       { error: "Failed to fetch words" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function POST(
-  request: Request,
-  { params }: RouteContext
-) {
+export async function POST(request: Request, { params }: RouteContext) {
   try {
     const { id } = await params;
     const wordListId = Number(id);
@@ -56,7 +50,7 @@ export async function POST(
     if (!Number.isInteger(wordListId)) {
       return NextResponse.json(
         { error: "Invalid word list ID" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -67,7 +61,7 @@ export async function POST(
     if (!wordList) {
       return NextResponse.json(
         { error: "Word list not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -75,43 +69,41 @@ export async function POST(
     const { english, phoneme, phonemes } = body;
 
     if (
-      !english ||
       typeof english !== "string" ||
-      !phoneme ||
-      typeof phoneme !== "string"
+      english.trim() === "" ||
+      typeof phoneme !== "string" ||
+      phoneme.trim() === ""
     ) {
       return NextResponse.json(
         { error: "English word and phoneme are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (
       phonemes !== undefined &&
       (!Array.isArray(phonemes) ||
+        phonemes.length === 0 ||
         phonemes.some(
-          (item: unknown) =>
-            typeof item !== "string"
+          (item: unknown) => typeof item !== "string" || item.trim() === "",
         ))
     ) {
       return NextResponse.json(
-        { error: "Phonemes must be an array of strings" },
-        { status: 400 }
+        { error: "Phonemes must be a non-empty array of strings" },
+        { status: 400 },
       );
     }
 
     const word = await prisma.word.create({
       data: {
-        english,
-        phoneme,
+        english: english.trim(),
+        phoneme: phoneme.trim(),
         wordListId,
         phonemes: {
-          create: (phonemes ?? []).map(
-            (symbol: string, index: number) => ({
-              symbol,
-              position: index,
-            })
-          ),
+          create: (phonemes ?? []).map((symbol: string, index: number) => ({
+            symbol: symbol.trim(),
+            position: index,
+          })),
         },
       },
       include: {
@@ -129,7 +121,7 @@ export async function POST(
 
     return NextResponse.json(
       { error: "Failed to create word" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
