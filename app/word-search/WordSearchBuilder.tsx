@@ -127,7 +127,6 @@ export default function WordSearch({ activityId }: WordSearchProps) {
     ? difficultySettings[activityDifficulty].gridSize
     : difficultySettings[difficulty].gridSize;
 
-  console.log("GRID:", activityId, activityDifficulty, activeGridSize);
   const activeGrid = activityId
     ? (() => {
         const fallbackPhonemes = [
@@ -147,36 +146,39 @@ export default function WordSearch({ activityId }: WordSearchProps) {
           () => Array(activeGridSize).fill(null),
         );
 
-        const wordsToPlace = words.filter(
-          (word) => word.phonemes.length <= activeGridSize,
-        );
+        // Spread words across the grid using different rows.
+        // The calculation is deterministic so server and client
+        // render exactly the same grid.
+        words.forEach((word, wordIndex) => {
+          if (word.phonemes.length > activeGridSize) {
+            return;
+          }
 
-        wordsToPlace.forEach((word, wordIndex) => {
-          const row =
-            wordsToPlace.length === 1
-              ? Math.floor(activeGridSize / 2)
-              : Math.floor(
-                  (wordIndex * (activeGridSize - 1)) /
-                    (wordsToPlace.length - 1),
-                );
+          const row = wordIndex % activeGridSize;
 
-          const maxStartColumn = activeGridSize - word.phonemes.length;
+          const availableColumns = activeGridSize - word.phonemes.length + 1;
 
-          const column =
-            maxStartColumn === 0 ? 0 : (wordIndex * 2) % (maxStartColumn + 1);
+          // Move the starting column across the grid for each word.
+          const column = (wordIndex * 2) % availableColumns;
 
-          word.phonemes.forEach((phoneme, phonemeIndex) => {
-            newGrid[row][column + phonemeIndex] = phoneme;
-          });
+          const canPlace = word.phonemes.every(
+            (_, phonemeIndex) => newGrid[row][column + phonemeIndex] === null,
+          );
+
+          if (canPlace) {
+            word.phonemes.forEach((phoneme, phonemeIndex) => {
+              newGrid[row][column + phonemeIndex] = phoneme;
+            });
+          }
         });
 
+        // Fill remaining cells with fallback phonemes.
         return newGrid.map((row, rowIndex) =>
           row.map(
             (cell, columnIndex) =>
               cell ??
               fallbackPhonemes[
-                (rowIndex * activeGridSize + columnIndex) %
-                  fallbackPhonemes.length
+                (rowIndex + columnIndex) % fallbackPhonemes.length
               ],
           ),
         );
