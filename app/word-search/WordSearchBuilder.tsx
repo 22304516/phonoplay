@@ -146,30 +146,51 @@ export default function WordSearch({ activityId }: WordSearchProps) {
           () => Array(activeGridSize).fill(null),
         );
 
-        // Spread words across the grid using different rows.
-        // The calculation is deterministic so server and client
-        // render exactly the same grid.
         words.forEach((word, wordIndex) => {
           if (word.phonemes.length > activeGridSize) {
             return;
           }
 
-          const row = wordIndex % activeGridSize;
-
           const availableColumns = activeGridSize - word.phonemes.length + 1;
 
-          // Move the starting column across the grid for each word.
-          const column = (wordIndex * 2) % availableColumns;
+          // Start with a different row for each word,
+          // then try every other row if that row is occupied.
+          const preferredRow = wordIndex % activeGridSize;
 
-          const canPlace = word.phonemes.every(
-            (_, phonemeIndex) => newGrid[row][column + phonemeIndex] === null,
-          );
+          for (let rowOffset = 0; rowOffset < activeGridSize; rowOffset++) {
+            const row = (preferredRow + rowOffset) % activeGridSize;
 
-          if (canPlace) {
-            word.phonemes.forEach((phoneme, phonemeIndex) => {
-              newGrid[row][column + phonemeIndex] = phoneme;
-            });
+            // Try different columns across the row.
+            const preferredColumn = (wordIndex * 2) % availableColumns;
+
+            for (
+              let columnOffset = 0;
+              columnOffset < availableColumns;
+              columnOffset++
+            ) {
+              const column =
+                (preferredColumn + columnOffset) % availableColumns;
+
+              const canPlace = word.phonemes.every(
+                (_, phonemeIndex) =>
+                  newGrid[row][column + phonemeIndex] === null,
+              );
+
+              if (!canPlace) {
+                continue;
+              }
+
+              word.phonemes.forEach((phoneme, phonemeIndex) => {
+                newGrid[row][column + phonemeIndex] = phoneme;
+              });
+
+              return;
+            }
           }
+
+          console.warn(
+            `Could not place word "${word.english}" in the ${activeGridSize}x${activeGridSize} grid.`,
+          );
         });
 
         // Fill remaining cells with fallback phonemes.
