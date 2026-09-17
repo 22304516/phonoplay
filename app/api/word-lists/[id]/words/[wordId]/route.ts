@@ -175,17 +175,16 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
       return NextResponse.json({ error: "Word not found" }, { status: 404 });
     }
 
-    const wordleActivity = await prisma.activity.findFirst({
+    const activity = await prisma.activity.findFirst({
       where: {
         wordId: wordIdNumber,
-        type: "WORDLE",
       },
     });
 
-    if (wordleActivity) {
+    if (activity) {
       return NextResponse.json(
         {
-          error: `Cannot delete this word because it is being used as the target word for "${wordleActivity.name}".`,
+          error: `Cannot delete this word because it is being used by activity "${activity.name}".`,
         },
         { status: 409 },
       );
