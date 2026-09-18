@@ -1,7 +1,9 @@
-FROM node:20-alpine AS base
+FROM node:22-bookworm-slim AS base
 
 FROM base AS deps
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
 RUN npm ci
