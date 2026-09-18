@@ -811,3 +811,392 @@ html[data-theme="dark"] button:focus-visible {
     margin: 1rem;
   }
 }
+
+/* =========================
+   WORD LIST MANAGEMENT
+   ========================= */
+
+.word-lists-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 2rem 4rem;
+}
+
+.word-lists-header {
+  margin-bottom: 2rem;
+}
+
+.word-lists-header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2.5rem;
+  letter-spacing: -0.03em;
+}
+
+.word-lists-header p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.word-list-form-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
+}
+
+.word-list-section-heading {
+  margin-bottom: 1.5rem;
+}
+
+.word-list-section-heading h2 {
+  margin: 0 0 0.35rem;
+}
+
+.word-list-section-heading p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.word-list-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.word-list-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.word-list-form input,
+.word-list-form textarea {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.word-list-form input:focus,
+.word-list-form textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgb(79 70 229 / 12%);
+}
+
+.word-list-form textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.word-list-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.word-list-primary-button,
+.word-list-secondary-button,
+.word-list-view-button,
+.word-list-edit-button,
+.word-list-delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.word-list-primary-button {
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.word-list-primary-button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.word-list-secondary-button {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.word-list-secondary-button:hover {
+  background: #f3f4f6;
+}
+
+.word-list-error {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.word-lists-section {
+  margin-top: 1rem;
+}
+
+.word-lists-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.word-list-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 220px;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.word-list-card:hover {
+  transform: translateY(-2px);
+  border-color: #c7d2fe;
+  box-shadow: 0 6px 16px rgb(0 0 0 / 7%);
+}
+
+.word-list-card h3 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.word-list-card h3 a {
+  color: #1f2937;
+}
+
+.word-list-card h3 a:hover {
+  color: #2563eb;
+}
+
+.word-list-description {
+  min-height: 48px;
+  margin: 0.75rem 0 1.25rem;
+  color: #6b7280;
+}
+
+.word-list-description.muted {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.word-list-stats {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.word-list-stats span {
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.word-list-stats strong {
+  color: #111827;
+}
+
+.word-list-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.word-list-view-button {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.word-list-view-button:hover {
+  background: #1d4ed8;
+}
+
+.word-list-edit-button {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.word-list-edit-button:hover {
+  background: #f3f4f6;
+}
+
+.word-list-delete-button {
+  border: 1px solid #fecaca;
+  background: #ffffff;
+  color: #dc2626;
+}
+
+.word-list-delete-button:hover {
+  background: #fef2f2;
+}
+
+.word-list-empty-state {
+  padding: 3rem 2rem;
+  text-align: center;
+  background: #ffffff;
+  border: 1px dashed #d1d5db;
+  border-radius: 14px;
+}
+
+.word-list-empty-state h3 {
+  margin-top: 0;
+}
+
+.word-list-empty-state p {
+  margin-bottom: 0;
+  color: #6b7280;
+}
+
+@media (max-width: 700px) {
+  .word-lists-page {
+    padding: 2rem 1rem 3rem;
+  }
+
+  .word-list-form-card {
+    padding: 1.5rem;
+  }
+
+  .word-lists-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .word-list-form-actions,
+  .word-list-card-actions {
+    flex-direction: column;
+  }
+
+  .word-list-primary-button,
+  .word-list-secondary-button,
+  .word-list-view-button,
+  .word-list-edit-button,
+  .word-list-delete-button {
+    width: 100%;
+  }
+}
+
+/* =========================
+   WORD LISTS - DARK MODE
+   ========================= */
+
+html[data-theme="dark"] .word-lists-page {
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .word-lists-header p,
+html[data-theme="dark"] .word-list-section-heading p {
+  color: #9ca3af;
+}
+
+html[data-theme="dark"] .word-list-form-card,
+html[data-theme="dark"] .word-list-card,
+html[data-theme="dark"] .word-list-empty-state {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+html[data-theme="dark"] .word-list-form input,
+html[data-theme="dark"] .word-list-form textarea {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] .word-list-form input::placeholder,
+html[data-theme="dark"] .word-list-form textarea::placeholder {
+  color: #9ca3af;
+}
+
+html[data-theme="dark"] .word-list-form input:focus,
+html[data-theme="dark"] .word-list-form textarea:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgb(129 140 248 / 15%);
+}
+
+html[data-theme="dark"] .word-list-secondary-button,
+html[data-theme="dark"] .word-list-edit-button {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] .word-list-secondary-button:hover,
+html[data-theme="dark"] .word-list-edit-button:hover {
+  background: #4b5563;
+}
+
+html[data-theme="dark"] .word-list-card h3 a {
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .word-list-card h3 a:hover {
+  color: #a5b4fc;
+}
+
+html[data-theme="dark"] .word-list-description {
+  color: #9ca3af;
+}
+
+html[data-theme="dark"] .word-list-description.muted {
+  color: #6b7280;
+}
+
+html[data-theme="dark"] .word-list-stats span {
+  background: #374151;
+  color: #d1d5db;
+}
+
+html[data-theme="dark"] .word-list-stats strong {
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .word-list-delete-button {
+  background: #374151;
+  border-color: #7f1d1d;
+  color: #f87171;
+}
+
+html[data-theme="dark"] .word-list-delete-button:hover {
+  background: #451a1a;
+}
+
+html[data-theme="dark"] .word-list-error {
+  background: #450a0a;
+  border-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+html[data-theme="dark"] .word-list-empty-state p {
+  color: #9ca3af;
+}
