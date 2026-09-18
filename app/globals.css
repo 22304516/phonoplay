@@ -1200,3 +1200,513 @@ html[data-theme="dark"] .word-list-error {
 html[data-theme="dark"] .word-list-empty-state p {
   color: #9ca3af;
 }
+
+/* =========================
+   WORD LIST DETAIL PAGE
+   Assessment 2
+   ========================= */
+
+.word-list-detail-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 2rem 4rem;
+}
+
+.word-list-back-link {
+  display: inline-flex;
+  margin-bottom: 1.5rem;
+  color: #4b5563;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.word-list-back-link:hover {
+  color: #2563eb;
+}
+
+.word-list-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.word-list-detail-header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2.5rem;
+  letter-spacing: -0.03em;
+}
+
+.word-list-detail-header p {
+  margin: 0;
+  color: #6b7280;
+  max-width: 700px;
+}
+
+.word-list-detail-card {
+  padding: 2rem;
+  margin-bottom: 2rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
+}
+
+.word-list-edit-card {
+  margin-bottom: 2rem;
+}
+
+.word-list-detail-section {
+  margin-bottom: 3rem;
+}
+
+.word-list-detail-section-heading {
+  margin-bottom: 1.5rem;
+}
+
+.word-list-detail-section-heading h2,
+.word-list-detail-section-heading h3 {
+  margin: 0 0 0.35rem;
+}
+
+.word-list-detail-section-heading p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.word-list-detail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.word-list-detail-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.word-list-detail-form label > span {
+  display: block;
+}
+
+.word-list-detail-form input[type="text"],
+.word-list-detail-form textarea,
+.word-list-detail-form select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  font: inherit;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.word-list-detail-form input[type="text"]:focus,
+.word-list-detail-form textarea:focus,
+.word-list-detail-form select:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgb(79 70 229 / 12%);
+}
+
+.word-list-detail-form textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.word-list-detail-form small {
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.word-list-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
+}
+
+.word-list-detail-primary-button,
+.word-list-detail-secondary-button,
+.word-list-detail-edit-button,
+.word-list-detail-delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.word-list-detail-primary-button {
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.word-list-detail-primary-button:hover:not(:disabled) {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.word-list-detail-primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.word-list-detail-secondary-button,
+.word-list-detail-edit-button {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.word-list-detail-secondary-button:hover,
+.word-list-detail-edit-button:hover {
+  background: #f3f4f6;
+}
+
+.word-list-detail-delete-button {
+  border: 1px solid #fecaca;
+  background: #ffffff;
+  color: #dc2626;
+}
+
+.word-list-detail-delete-button:hover {
+  background: #fef2f2;
+}
+
+.word-list-detail-error {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.word-list-words-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.word-list-word-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 170px;
+  padding: 1.4rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.word-list-word-card:hover {
+  transform: translateY(-2px);
+  border-color: #c7d2fe;
+  box-shadow: 0 6px 16px rgb(0 0 0 / 7%);
+}
+
+.word-list-word-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.word-list-word-header h3 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.word-list-word-phoneme {
+  color: #6b7280;
+  font-family: monospace;
+  font-size: 1rem;
+}
+
+.word-list-phoneme-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.word-list-phoneme-list span {
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #374151;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.word-list-word-actions,
+.word-list-activity-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.word-list-detail-empty {
+  padding: 3rem 2rem;
+  text-align: center;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.word-list-detail-empty h3 {
+  margin-top: 0;
+}
+
+.word-list-detail-empty p {
+  margin-bottom: 0;
+  color: #6b7280;
+}
+
+.word-list-activities-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.word-list-activity-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
+}
+
+.word-list-activity-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.word-list-activity-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.8rem;
+}
+
+.word-list-activity-tags span {
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #4b5563;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.word-list-activity-target {
+  margin: 1.25rem 0 0;
+  color: #4b5563;
+}
+
+.word-list-activity-warning {
+  margin: 1.25rem 0 0;
+  padding: 0.8rem;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.word-list-checkbox-label {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.65rem !important;
+  font-weight: 600;
+}
+
+.word-list-checkbox-label input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+}
+
+/* =========================
+   WORD LIST DETAIL - DARK MODE
+   ========================= */
+
+html[data-theme="dark"] .word-list-detail-page {
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .word-list-back-link {
+  color: #d1d5db;
+}
+
+html[data-theme="dark"] .word-list-back-link:hover {
+  color: #a5b4fc;
+}
+
+html[data-theme="dark"] .word-list-detail-header p,
+html[data-theme="dark"] .word-list-detail-section-heading p,
+html[data-theme="dark"] .word-list-detail-form small {
+  color: #9ca3af;
+}
+
+html[data-theme="dark"] .word-list-detail-card,
+html[data-theme="dark"] .word-list-word-card,
+html[data-theme="dark"] .word-list-activity-card,
+html[data-theme="dark"] .word-list-detail-empty {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+html[data-theme="dark"] .word-list-detail-form input[type="text"],
+html[data-theme="dark"] .word-list-detail-form textarea,
+html[data-theme="dark"] .word-list-detail-form select {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] .word-list-detail-form input::placeholder,
+html[data-theme="dark"] .word-list-detail-form textarea::placeholder {
+  color: #9ca3af;
+}
+
+html[data-theme="dark"] .word-list-detail-form input[type="text"]:focus,
+html[data-theme="dark"] .word-list-detail-form textarea:focus,
+html[data-theme="dark"] .word-list-detail-form select:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgb(129 140 248 / 15%);
+}
+
+html[data-theme="dark"] .word-list-detail-secondary-button,
+html[data-theme="dark"] .word-list-detail-edit-button {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] .word-list-detail-secondary-button:hover,
+html[data-theme="dark"] .word-list-detail-edit-button:hover {
+  background: #4b5563;
+}
+
+html[data-theme="dark"] .word-list-detail-delete-button {
+  background: #374151;
+  border-color: #7f1d1d;
+  color: #f87171;
+}
+
+html[data-theme="dark"] .word-list-detail-delete-button:hover {
+  background: #451a1a;
+}
+
+html[data-theme="dark"] .word-list-detail-error {
+  background: #450a0a;
+  border-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+html[data-theme="dark"] .word-list-word-phoneme {
+  color: #9ca3af;
+}
+
+html[data-theme="dark"] .word-list-phoneme-list span,
+html[data-theme="dark"] .word-list-activity-tags span {
+  background: #374151;
+  color: #d1d5db;
+}
+
+html[data-theme="dark"] .word-list-detail-empty p,
+html[data-theme="dark"] .word-list-activity-target {
+  color: #9ca3af;
+}
+
+html[data-theme="dark"] .word-list-activity-warning {
+  background: #451a03;
+  border-color: #92400e;
+  color: #fcd34d;
+}
+
+@media (max-width: 700px) {
+  .word-list-detail-page {
+    padding: 2rem 1rem 3rem;
+  }
+
+  .word-list-detail-header {
+    flex-direction: column;
+  }
+
+  .word-list-detail-header h1 {
+    font-size: 2rem;
+  }
+
+  .word-list-words-grid,
+  .word-list-activities-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .word-list-detail-card {
+    padding: 1.5rem;
+  }
+
+  .word-list-word-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .word-list-detail-actions,
+  .word-list-word-actions,
+  .word-list-activity-actions {
+    flex-direction: column;
+  }
+
+  .word-list-detail-primary-button,
+  .word-list-detail-secondary-button,
+  .word-list-detail-edit-button,
+  .word-list-detail-delete-button {
+    width: 100%;
+  }
+}
+
+/* =========================
+   BUILDER DROPDOWNS - DARK MODE
+   Fix native select backgrounds
+   ========================= */
+
+html[data-theme="dark"] select {
+  background-color: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] select option {
+  background-color: #374151;
+  color: #f9fafb;
+}

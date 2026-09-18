@@ -528,18 +528,21 @@ export default function WordListPage() {
   }
 
   return (
-    <main className="page-container">
-      <button type="button" onClick={() => router.push("/word-lists")}>
+    <main className="word-list-detail-page">
+      <Link href="/word-lists" className="word-list-back-link">
         ← Back to Word Lists
-      </button>
+      </Link>
 
       {editingWordList ? (
-        <section className="settings-card">
-          <h2>Edit Word List</h2>
+        <section className="word-list-detail-card word-list-edit-card">
+          <div className="word-list-detail-section-heading">
+            <h2>Edit Word List</h2>
+            <p>Update the name and description for this word list.</p>
+          </div>
 
-          <form onSubmit={updateWordList}>
+          <form className="word-list-detail-form" onSubmit={updateWordList}>
             <label>
-              Name
+              <span>Name</span>
               <input
                 type="text"
                 value={editWordListName}
@@ -548,42 +551,66 @@ export default function WordListPage() {
             </label>
 
             <label>
-              Description
+              <span>Description</span>
               <textarea
                 value={editWordListDescription}
                 onChange={(event) =>
                   setEditWordListDescription(event.target.value)
                 }
+                rows={3}
               />
             </label>
 
-            <button type="submit">Save Changes</button>
+            <div className="word-list-detail-actions">
+              <button type="submit" className="word-list-detail-primary-button">
+                Save Changes
+              </button>
 
-            <button type="button" onClick={cancelEditingWordList}>
-              Cancel
-            </button>
+              <button
+                type="button"
+                className="word-list-detail-secondary-button"
+                onClick={cancelEditingWordList}
+              >
+                Cancel
+              </button>
+            </div>
           </form>
         </section>
       ) : (
-        <>
-          <h1>{wordList.name}</h1>
+        <header className="word-list-detail-header">
+          <div>
+            <h1>{wordList.name}</h1>
+            {wordList.description && <p>{wordList.description}</p>}
+          </div>
 
-          {wordList.description && <p>{wordList.description}</p>}
-
-          <button type="button" onClick={startEditingWordList}>
+          <button
+            type="button"
+            className="word-list-detail-secondary-button"
+            onClick={startEditingWordList}
+          >
             Edit Word List
           </button>
-        </>
+        </header>
       )}
 
-      {error && <p>{error}</p>}
+      {error && <div className="word-list-detail-error">{error}</div>}
 
-      <section className="settings-card">
-        <h2>{editingWordId ? "Edit Word" : "Add Word"}</h2>
+      <section className="word-list-detail-card">
+        <div className="word-list-detail-section-heading">
+          <h2>{editingWordId ? "Edit Word" : "Add Word"}</h2>
+          <p>
+            {editingWordId
+              ? "Update the word and its phoneme information."
+              : "Add a word and its individual phonemes to this list."}
+          </p>
+        </div>
 
-        <form onSubmit={editingWordId ? updateWord : addWord}>
+        <form
+          className="word-list-detail-form"
+          onSubmit={editingWordId ? updateWord : addWord}
+        >
           <label>
-            English word
+            <span>English word</span>
             <input
               type="text"
               value={english}
@@ -593,7 +620,7 @@ export default function WordListPage() {
           </label>
 
           <label>
-            Phoneme transcription
+            <span>Phoneme transcription</span>
             <input
               type="text"
               value={phoneme}
@@ -603,68 +630,100 @@ export default function WordListPage() {
           </label>
 
           <label>
-            Individual phonemes
+            <span>Individual phonemes</span>
             <input
               type="text"
               value={phonemes}
               onChange={(event) => setPhonemes(event.target.value)}
               placeholder="e.g. /θ/, /ɪ/, /n/"
             />
+            <small>Separate each phoneme with a comma.</small>
           </label>
 
-          <button type="submit">
-            {editingWordId ? "Save Changes" : "Add Word"}
-          </button>
-
-          {editingWordId && (
-            <button type="button" onClick={cancelEditingWord}>
-              Cancel
+          <div className="word-list-detail-actions">
+            <button type="submit" className="word-list-detail-primary-button">
+              {editingWordId ? "Save Changes" : "Add Word"}
             </button>
-          )}
+
+            {editingWordId && (
+              <button
+                type="button"
+                className="word-list-detail-secondary-button"
+                onClick={cancelEditingWord}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
       </section>
 
-      <section>
-        <h2>Words</h2>
+      <section className="word-list-detail-section">
+        <div className="word-list-detail-section-heading">
+          <h2>Words</h2>
+          <p>{wordList.words.length} words in this list.</p>
+        </div>
 
         {wordList.words.length === 0 ? (
-          <p>No words in this list yet.</p>
+          <div className="word-list-detail-empty">
+            <h3>No words yet</h3>
+            <p>Add your first word using the form above.</p>
+          </div>
         ) : (
-          <div>
+          <div className="word-list-words-grid">
             {wordList.words.map((word) => (
-              <article key={word.id} className="settings-card">
-                <h3>{word.english}</h3>
+              <article key={word.id} className="word-list-word-card">
+                <div>
+                  <div className="word-list-word-header">
+                    <h3>{word.english}</h3>
+                    <span className="word-list-word-phoneme">
+                      {word.phoneme}
+                    </span>
+                  </div>
 
-                <p>{word.phoneme}</p>
+                  {word.phonemes.length > 0 && (
+                    <div className="word-list-phoneme-list">
+                      {word.phonemes
+                        .sort((a, b) => a.position - b.position)
+                        .map((item) => (
+                          <span key={item.id}>{item.symbol}</span>
+                        ))}
+                    </div>
+                  )}
+                </div>
 
-                {word.phonemes.length > 0 && (
-                  <p>
-                    {word.phonemes
-                      .sort((a, b) => a.position - b.position)
-                      .map((item) => item.symbol)
-                      .join(" · ")}
-                  </p>
-                )}
+                <div className="word-list-word-actions">
+                  <button
+                    type="button"
+                    className="word-list-detail-edit-button"
+                    onClick={() => startEditingWord(word)}
+                  >
+                    Edit
+                  </button>
 
-                <button type="button" onClick={() => startEditingWord(word)}>
-                  Edit
-                </button>
-
-                <button type="button" onClick={() => deleteWord(word.id)}>
-                  Delete
-                </button>
+                  <button
+                    type="button"
+                    className="word-list-detail-delete-button"
+                    onClick={() => deleteWord(word.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
               </article>
             ))}
           </div>
         )}
       </section>
 
-      <section className="settings-card">
-        <h2>Create Activity</h2>
+      <section className="word-list-detail-card">
+        <div className="word-list-detail-section-heading">
+          <h2>Create Activity</h2>
+          <p>Create a Wordle or Word Search activity using this word list.</p>
+        </div>
 
-        <form onSubmit={addActivity}>
+        <form className="word-list-detail-form" onSubmit={addActivity}>
           <label>
-            Activity name
+            <span>Activity name</span>
             <input
               type="text"
               value={activityName}
@@ -674,12 +733,11 @@ export default function WordListPage() {
           </label>
 
           <label>
-            Activity type
+            <span>Activity type</span>
             <select
               value={activityType}
               onChange={(event) => {
                 const type = event.target.value as "WORDLE" | "WORD_SEARCH";
-
                 setActivityType(type);
 
                 if (type === "WORD_SEARCH") {
@@ -694,7 +752,7 @@ export default function WordListPage() {
 
           {activityType === "WORDLE" && (
             <label>
-              Target word
+              <span>Target word</span>
               <select
                 value={activityWordId}
                 onChange={(event) => setActivityWordId(event.target.value)}
@@ -711,7 +769,7 @@ export default function WordListPage() {
           )}
 
           <label>
-            Difficulty
+            <span>Difficulty</span>
             <select
               value={editActivityDifficulty}
               onChange={(event) =>
@@ -727,49 +785,63 @@ export default function WordListPage() {
           </label>
 
           {editActivityType === "WORD_SEARCH" && (
-            <>
-              <label>
-                Direction
-                <select
-                  value={editActivityDirection}
-                  onChange={(event) =>
-                    setEditActivityDirection(event.target.value)
-                  }
-                >
-                  <option value="horizontal">Horizontal</option>
-                </select>
-              </label>
-            </>
+            <label>
+              <span>Direction</span>
+              <select
+                value={editActivityDirection}
+                onChange={(event) =>
+                  setEditActivityDirection(event.target.value)
+                }
+              >
+                <option value="horizontal">Horizontal</option>
+              </select>
+            </label>
           )}
 
-          <label>
+          <label className="word-list-checkbox-label">
             <input
               type="checkbox"
               checked={activityHint}
               onChange={(event) => setActivityHint(event.target.checked)}
             />
-            Allow hints
+            <span>Allow hints</span>
           </label>
 
-          <button type="submit">Create Activity</button>
+          <div className="word-list-detail-actions">
+            <button type="submit" className="word-list-detail-primary-button">
+              Create Activity
+            </button>
+          </div>
         </form>
       </section>
 
-      <section>
-        <h2>Activities</h2>
+      <section className="word-list-detail-section">
+        <div className="word-list-detail-section-heading">
+          <h2>Activities</h2>
+          <p>{wordList.activities.length} activities in this list.</p>
+        </div>
 
         {wordList.activities.length === 0 ? (
-          <p>No activities in this list yet.</p>
+          <div className="word-list-detail-empty">
+            <h3>No activities yet</h3>
+            <p>Create your first activity using the form above.</p>
+          </div>
         ) : (
-          <div>
+          <div className="word-list-activities-grid">
             {wordList.activities.map((activity) => (
-              <article key={activity.id} className="settings-card">
+              <article key={activity.id} className="word-list-activity-card">
                 {editingActivityId === activity.id ? (
-                  <form onSubmit={updateActivity}>
-                    <h3>Edit Activity</h3>
+                  <form
+                    className="word-list-detail-form"
+                    onSubmit={updateActivity}
+                  >
+                    <div className="word-list-detail-section-heading">
+                      <h3>Edit Activity</h3>
+                      <p>Update this activity's settings.</p>
+                    </div>
 
                     <label>
-                      Activity name
+                      <span>Activity name</span>
                       <input
                         type="text"
                         value={editActivityName}
@@ -780,7 +852,7 @@ export default function WordListPage() {
                     </label>
 
                     <label>
-                      Activity type
+                      <span>Activity type</span>
                       <select
                         value={editActivityType}
                         onChange={(event) => {
@@ -802,7 +874,7 @@ export default function WordListPage() {
 
                     {editActivityType === "WORDLE" && (
                       <label>
-                        Target word
+                        <span>Target word</span>
                         <select
                           value={editActivityWordId}
                           onChange={(event) =>
@@ -821,7 +893,7 @@ export default function WordListPage() {
                     )}
 
                     <label>
-                      Difficulty
+                      <span>Difficulty</span>
                       <select
                         value={editActivityDifficulty}
                         onChange={(event) =>
@@ -836,7 +908,7 @@ export default function WordListPage() {
                       </select>
                     </label>
 
-                    <label>
+                    <label className="word-list-checkbox-label">
                       <input
                         type="checkbox"
                         checked={editActivityHint}
@@ -844,69 +916,92 @@ export default function WordListPage() {
                           setEditActivityHint(event.target.checked)
                         }
                       />
-                      Allow hints
+                      <span>Allow hints</span>
                     </label>
 
-                    <button type="submit">Save Changes</button>
+                    <div className="word-list-detail-actions">
+                      <button
+                        type="submit"
+                        className="word-list-detail-primary-button"
+                      >
+                        Save Changes
+                      </button>
 
-                    <button type="button" onClick={cancelEditingActivity}>
-                      Cancel
-                    </button>
+                      <button
+                        type="button"
+                        className="word-list-detail-secondary-button"
+                        onClick={cancelEditingActivity}
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </form>
                 ) : (
                   <>
-                    <h3>{activity.name}</h3>
+                    <div className="word-list-activity-header">
+                      <div>
+                        <h3>{activity.name}</h3>
 
-                    <p>
-                      {activity.type === "WORD_SEARCH"
-                        ? "Word Search"
-                        : "Wordle"}{" "}
-                      · {activity.difficulty}
-                    </p>
+                        <div className="word-list-activity-tags">
+                          <span>
+                            {activity.type === "WORD_SEARCH"
+                              ? "Word Search"
+                              : "Wordle"}
+                          </span>
+                          <span>{activity.difficulty}</span>
+                          <span>
+                            {activity.hint ? "Hints enabled" : "Hints disabled"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
 
                     {activity.type === "WORDLE" && activity.word && (
-                      <p>
+                      <p className="word-list-activity-target">
                         <strong>Target word:</strong> {activity.word.english} —{" "}
                         {activity.word.phoneme}
                       </p>
                     )}
 
-                    <p>Hints: {activity.hint ? "Enabled" : "Disabled"}</p>
-
                     {activity.type === "WORDLE" && !activity.word && (
-                      <p>
+                      <p className="word-list-activity-warning">
                         This Wordle has no target word. Edit the activity and
                         select a target word before launching it.
                       </p>
                     )}
 
-                    <button
-                      type="button"
-                      disabled={activity.type === "WORDLE" && !activity.word}
-                      onClick={() => {
-                        router.push(
-                          activity.type === "WORDLE"
-                            ? `/wordle?activityId=${activity.id}`
-                            : `/word-search?activityId=${activity.id}`,
-                        );
-                      }}
-                    >
-                      Launch
-                    </button>
+                    <div className="word-list-activity-actions">
+                      <button
+                        type="button"
+                        className="word-list-detail-primary-button"
+                        disabled={activity.type === "WORDLE" && !activity.word}
+                        onClick={() => {
+                          router.push(
+                            activity.type === "WORDLE"
+                              ? `/wordle?activityId=${activity.id}`
+                              : `/word-search?activityId=${activity.id}`,
+                          );
+                        }}
+                      >
+                        Launch
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => startEditingActivity(activity)}
-                    >
-                      Edit
-                    </button>
+                      <button
+                        type="button"
+                        className="word-list-detail-edit-button"
+                        onClick={() => startEditingActivity(activity)}
+                      >
+                        Edit
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => deleteActivity(activity.id)}
-                    >
-                      Delete
-                    </button>
+                      <button
+                        type="button"
+                        className="word-list-detail-delete-button"
+                        onClick={() => deleteActivity(activity.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </>
                 )}
               </article>
