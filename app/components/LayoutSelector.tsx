@@ -2,125 +2,57 @@
 
 import { useEffect, useState } from "react";
 
-type LayoutDensity = "comfortable" | "compact";
-type TextSize = "normal" | "large";
+type Theme = "light" | "dark";
 
-export default function LayoutSelector() {
-  const [density, setDensity] = useState<LayoutDensity>("comfortable");
-
-  const [textSize, setTextSize] = useState<TextSize>("normal");
+export default function ThemeSelector() {
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    const cookies = document.cookie.split("; ");
+    const savedTheme = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("theme="))
+      ?.split("=")[1] as Theme | undefined;
 
-    const densityCookie = cookies.find((cookie) =>
-      cookie.startsWith("layoutDensity="),
-    );
+    const initialTheme =
+      savedTheme === "dark" || savedTheme === "light" ? savedTheme : "light";
 
-    const textSizeCookie = cookies.find((cookie) =>
-      cookie.startsWith("textSize="),
-    );
-
-    if (densityCookie) {
-      const value = densityCookie.split("=")[1];
-
-      if (value === "comfortable" || value === "compact") {
-        setDensity(value);
-      }
-    }
-
-    if (textSizeCookie) {
-      const value = textSizeCookie.split("=")[1];
-
-      if (value === "normal" || value === "large") {
-        setTextSize(value);
-      }
-    }
-
-    document.documentElement.dataset.layout =
-      densityCookie?.split("=")[1] || "comfortable";
-
-    document.documentElement.dataset.textSize =
-      textSizeCookie?.split("=")[1] || "normal";
+    setTheme(initialTheme);
+    document.documentElement.setAttribute("data-theme", initialTheme);
   }, []);
 
-  function changeDensity(value: LayoutDensity) {
-    setDensity(value);
+  function changeTheme(newTheme: Theme) {
+    setTheme(newTheme);
 
-    document.cookie = `layoutDensity=${value}; path=/; max-age=31536000`;
+    document.cookie = `theme=${newTheme}; path=/; max-age=31536000`;
 
-    document.documentElement.dataset.layout = value;
-  }
-
-  function changeTextSize(value: TextSize) {
-    setTextSize(value);
-
-    document.cookie = `textSize=${value}; path=/; max-age=31536000`;
-
-    document.documentElement.dataset.textSize = value;
+    document.documentElement.setAttribute("data-theme", newTheme);
   }
 
   return (
-    <div className="layout-settings">
-      <div className="setting-group">
-        <h3>Layout density</h3>
+    <div className="theme-selector">
+      <h2>Appearance</h2>
 
-        <p>Choose how much spacing is used throughout the interface.</p>
+      <p>Choose the appearance of the PhonoPlay interface.</p>
 
-        <div className="setting-options">
-          <label>
-            <input
-              type="radio"
-              name="layout-density"
-              value="comfortable"
-              checked={density === "comfortable"}
-              onChange={() => changeDensity("comfortable")}
-            />
-            Comfortable
-          </label>
+      <div className="theme-options">
+        <button
+          className={theme === "light" ? "active" : ""}
+          onClick={() => changeTheme("light")}
+        >
+          Light Mode
+        </button>
 
-          <label>
-            <input
-              type="radio"
-              name="layout-density"
-              value="compact"
-              checked={density === "compact"}
-              onChange={() => changeDensity("compact")}
-            />
-            Compact
-          </label>
-        </div>
+        <button
+          className={theme === "dark" ? "active" : ""}
+          onClick={() => changeTheme("dark")}
+        >
+          Dark Mode
+        </button>
       </div>
 
-      <div className="setting-group">
-        <h3>Text size</h3>
-
-        <p>Increase text size for improved readability.</p>
-
-        <div className="setting-options">
-          <label>
-            <input
-              type="radio"
-              name="text-size"
-              value="normal"
-              checked={textSize === "normal"}
-              onChange={() => changeTextSize("normal")}
-            />
-            Normal
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="text-size"
-              value="large"
-              checked={textSize === "large"}
-              onChange={() => changeTextSize("large")}
-            />
-            Large
-          </label>
-        </div>
-      </div>
+      <p className="setting-status">
+        Current theme: <strong>{theme}</strong>
+      </p>
     </div>
   );
 }
