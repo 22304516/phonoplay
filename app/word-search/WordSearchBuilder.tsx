@@ -836,7 +836,11 @@ renderGrid();
   return (
     <div className="word-search-page">
       <section className="page-header">
-        <button type="button" onClick={() => window.history.back()}>
+        <button
+          type="button"
+          className="activity-back-button"
+          onClick={() => window.history.back()}
+        >
           ← Back
         </button>
 

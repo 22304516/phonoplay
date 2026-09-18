@@ -520,8 +520,12 @@ export default function WordListPage() {
       <main className="page-container">
         <p>{error || "Word list not found"}</p>
 
-        <button onClick={() => router.push("/word-lists")}>
-          Back to Word Lists
+        <button
+          type="button"
+          className="word-list-detail-back-button"
+          onClick={() => router.push("/word-lists")}
+        >
+          ← Back to Word Lists
         </button>
       </main>
     );

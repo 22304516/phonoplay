@@ -1,3 +1,7 @@
+/* =========================
+   GLOBAL
+   ========================= */
+
 * {
   box-sizing: border-box;
 }
@@ -58,7 +62,7 @@ li {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background: white;
+  background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
   z-index: 20;
 }
@@ -144,7 +148,7 @@ li {
 .generate-button,
 .card-button {
   background: #2563eb;
-  color: white;
+  color: #ffffff;
 }
 
 .primary-button:hover,
@@ -154,7 +158,7 @@ li {
 }
 
 .secondary-button {
-  background: white;
+  background: #ffffff;
   color: #2563eb;
   border: 1px solid #2563eb;
 }
@@ -228,7 +232,7 @@ li {
 }
 
 .activity-card {
-  background: white;
+  background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 2rem;
@@ -263,7 +267,7 @@ li {
   margin: 2rem;
   padding: 3rem 2rem;
   text-align: center;
-  background: white;
+  background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
 }
@@ -288,7 +292,7 @@ li {
 
 .settings-panel,
 .preview-panel {
-  background: white;
+  background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 2rem;
@@ -336,25 +340,25 @@ li {
   justify-content: center;
   border: 2px solid #d1d5db;
   border-radius: 6px;
-  background: white;
+  background: #ffffff;
   font-weight: 700;
 }
 
 .phoneme-tile.correct {
   background: #22c55e;
-  color: white;
+  color: #ffffff;
   border-color: #22c55e;
 }
 
 .phoneme-tile.present {
   background: #eab308;
-  color: white;
+  color: #ffffff;
   border-color: #eab308;
 }
 
 .phoneme-tile.incorrect {
   background: #6b7280;
-  color: white;
+  color: #ffffff;
   border-color: #6b7280;
 }
 
@@ -373,7 +377,7 @@ li {
   padding: 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  background: white;
+  background: #ffffff;
 }
 
 .phoneme-keyboard button:hover {
@@ -417,7 +421,7 @@ li {
   padding: 0.6rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  background: white;
+  background: #ffffff;
   font-size: 1rem;
 }
 
@@ -452,11 +456,9 @@ li {
   display: grid;
   grid-template-columns: repeat(var(--grid-size), minmax(0, 1fr));
   gap: 5px;
-
   width: 100%;
   max-width: 100%;
   margin: 30px auto;
-
   box-sizing: border-box;
 }
 
@@ -465,18 +467,14 @@ li {
   aspect-ratio: 1;
   min-width: 0;
   padding: 4px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  background: white;
-
+  background: #ffffff;
   font-size: clamp(14px, 2vw, 20px);
   font-weight: 600;
-
   cursor: pointer;
 }
 
@@ -506,11 +504,7 @@ li {
   padding: 0.75rem 1rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  background: white;
-}
-
-.phoneme-hint {
-  color: #6b7280;
+  background: #ffffff;
 }
 
 /* =========================
@@ -530,7 +524,7 @@ li {
 }
 
 .about-card {
-  background: white;
+  background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 2rem;
@@ -584,7 +578,7 @@ li {
 }
 
 .settings-card {
-  background: white;
+  background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 1.5rem;
@@ -603,20 +597,22 @@ li {
   padding: 0.75rem 1rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  background: white;
+  background: #ffffff;
 }
 
 .theme-options button.active {
   border-color: #2563eb;
   background: #2563eb;
-  color: white;
+  color: #ffffff;
 }
 
 .setting-status {
   color: #6b7280;
 }
 
-/* Layout preferences */
+/* =========================
+   LAYOUT PREFERENCES
+   ========================= */
 
 html[data-layout="compact"] .settings-card,
 html[data-layout="compact"] .builder {
@@ -635,7 +631,9 @@ html[data-layout="comfortable"] .settings-card {
   padding: 1.5rem;
 }
 
-/* Text size preferences */
+/* =========================
+   TEXT SIZE PREFERENCES
+   ========================= */
 
 html[data-text-size="large"] {
   font-size: 18px;
@@ -655,165 +653,14 @@ footer {
   margin-top: 4rem;
   padding: 2rem;
   text-align: center;
-  background: white;
+  background: #ffffff;
   border-top: 1px solid #e5e7eb;
   color: #6b7280;
 }
 
 /* =========================
-   DARK MODE
-   ========================= */
-
-html[data-theme="dark"] body {
-  background: #111827;
-  color: #f9fafb;
-}
-
-html[data-theme="dark"] .navbar,
-html[data-theme="dark"] footer,
-html[data-theme="dark"] .activity-card,
-html[data-theme="dark"] .information-section,
-html[data-theme="dark"] .settings-card,
-html[data-theme="dark"] .settings-panel,
-html[data-theme="dark"] .preview-panel,
-html[data-theme="dark"] .about-card {
-  background: #1f2937;
-  border-color: #374151;
-}
-
-html[data-theme="dark"] .navigation-links a:hover {
-  color: #60a5fa;
-}
-
-html[data-theme="dark"] .hero-description,
-html[data-theme="dark"] .section-heading p,
-html[data-theme="dark"] .activity-card p,
-html[data-theme="dark"] .information-section p,
-html[data-theme="dark"] .page-header p,
-html[data-theme="dark"] .about-card p,
-html[data-theme="dark"] .setting-status,
-html[data-theme="dark"] .phoneme-hint {
-  color: #9ca3af;
-}
-
-html[data-theme="dark"] .phoneme-keyboard button,
-html[data-theme="dark"] .search-cell,
-html[data-theme="dark"] .word-search-controls button,
-html[data-theme="dark"] .settings-panel button,
-html[data-theme="dark"] .theme-options button,
-html[data-theme="dark"] .secondary-button {
-  background: #374151;
-  color: #f9fafb;
-  border-color: #4b5563;
-}
-
-html[data-theme="dark"] .phoneme-tile {
-  background: #374151;
-  color: #f9fafb;
-  border-color: #4b5563;
-}
-
-html[data-theme="dark"] .search-cell.selected {
-  background: #1d4ed8;
-}
-
-html[data-theme="dark"] .video-placeholder {
-  background: #111827;
-  border-color: #4b5563;
-}
-
-html[data-theme="dark"] a:focus-visible,
-html[data-theme="dark"] button:focus-visible {
-  outline-color: #60a5fa;
-}
-
-/* =========================
-   RESPONSIVE
-   ========================= */
-
-@media (max-width: 700px) {
-  .navbar {
-    padding: 1rem;
-  }
-
-  .menu-button {
-    display: block;
-  }
-
-  .navigation-links {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    background: white;
-    border-bottom: 1px solid #e5e7eb;
-  }
-
-  .navigation-links.navigation-open {
-    display: flex;
-  }
-
-  .navigation-links a {
-    padding: 1rem;
-    text-align: center;
-    border-top: 1px solid #e5e7eb;
-  }
-
-  html[data-theme="dark"] .navigation-links {
-    background: #1f2937;
-    border-color: #374151;
-  }
-
-  html[data-theme="dark"] .navigation-links a {
-    border-color: #374151;
-  }
-
-  .hero-section {
-    padding: 3rem 1rem;
-  }
-
-  .hero-section h1 {
-    font-size: 2.5rem;
-  }
-
-  .hero-section h2 {
-    font-size: 1.4rem;
-  }
-
-  .activities-section {
-    padding: 2rem 1rem;
-  }
-
-  .activity-grid,
-  .about-grid,
-  .builder {
-    grid-template-columns: 1fr;
-  }
-
-  .wordle-page,
-  .word-search-page,
-  .about-page,
-  .settings-page {
-    padding: 2rem 1rem;
-  }
-
-  .settings-panel,
-  .preview-panel,
-  .about-card {
-    padding: 1.5rem;
-  }
-
-  .information-section {
-    margin: 1rem;
-  }
-}
-
-/* =========================
    WORD LIST MANAGEMENT
+   Assessment 2
    ========================= */
 
 .word-lists-page {
@@ -1070,137 +917,6 @@ html[data-theme="dark"] button:focus-visible {
   border-radius: 14px;
 }
 
-.word-list-empty-state h3 {
-  margin-top: 0;
-}
-
-.word-list-empty-state p {
-  margin-bottom: 0;
-  color: #6b7280;
-}
-
-@media (max-width: 700px) {
-  .word-lists-page {
-    padding: 2rem 1rem 3rem;
-  }
-
-  .word-list-form-card {
-    padding: 1.5rem;
-  }
-
-  .word-lists-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .word-list-form-actions,
-  .word-list-card-actions {
-    flex-direction: column;
-  }
-
-  .word-list-primary-button,
-  .word-list-secondary-button,
-  .word-list-view-button,
-  .word-list-edit-button,
-  .word-list-delete-button {
-    width: 100%;
-  }
-}
-
-/* =========================
-   WORD LISTS - DARK MODE
-   ========================= */
-
-html[data-theme="dark"] .word-lists-page {
-  color: #f9fafb;
-}
-
-html[data-theme="dark"] .word-lists-header p,
-html[data-theme="dark"] .word-list-section-heading p {
-  color: #9ca3af;
-}
-
-html[data-theme="dark"] .word-list-form-card,
-html[data-theme="dark"] .word-list-card,
-html[data-theme="dark"] .word-list-empty-state {
-  background: #1f2937;
-  border-color: #374151;
-}
-
-html[data-theme="dark"] .word-list-form input,
-html[data-theme="dark"] .word-list-form textarea {
-  background: #374151;
-  color: #f9fafb;
-  border-color: #4b5563;
-}
-
-html[data-theme="dark"] .word-list-form input::placeholder,
-html[data-theme="dark"] .word-list-form textarea::placeholder {
-  color: #9ca3af;
-}
-
-html[data-theme="dark"] .word-list-form input:focus,
-html[data-theme="dark"] .word-list-form textarea:focus {
-  border-color: #818cf8;
-  box-shadow: 0 0 0 3px rgb(129 140 248 / 15%);
-}
-
-html[data-theme="dark"] .word-list-secondary-button,
-html[data-theme="dark"] .word-list-edit-button {
-  background: #374151;
-  color: #f9fafb;
-  border-color: #4b5563;
-}
-
-html[data-theme="dark"] .word-list-secondary-button:hover,
-html[data-theme="dark"] .word-list-edit-button:hover {
-  background: #4b5563;
-}
-
-html[data-theme="dark"] .word-list-card h3 a {
-  color: #f9fafb;
-}
-
-html[data-theme="dark"] .word-list-card h3 a:hover {
-  color: #a5b4fc;
-}
-
-html[data-theme="dark"] .word-list-description {
-  color: #9ca3af;
-}
-
-html[data-theme="dark"] .word-list-description.muted {
-  color: #6b7280;
-}
-
-html[data-theme="dark"] .word-list-stats span {
-  background: #374151;
-  color: #d1d5db;
-}
-
-html[data-theme="dark"] .word-list-stats strong {
-  color: #f9fafb;
-}
-
-html[data-theme="dark"] .word-list-delete-button {
-  background: #374151;
-  border-color: #7f1d1d;
-  color: #f87171;
-}
-
-html[data-theme="dark"] .word-list-delete-button:hover {
-  background: #451a1a;
-}
-
-html[data-theme="dark"] .word-list-error {
-  background: #450a0a;
-  border-color: #7f1d1d;
-  color: #fca5a5;
-}
-
-html[data-theme="dark"] .word-list-empty-state p {
-  color: #9ca3af;
-}
-
 /* =========================
    WORD LIST DETAIL PAGE
    Assessment 2
@@ -1217,7 +933,6 @@ html[data-theme="dark"] .word-list-empty-state p {
   margin-bottom: 1.5rem;
   color: #4b5563;
   font-weight: 600;
-  text-decoration: none;
 }
 
 .word-list-back-link:hover {
@@ -1402,7 +1117,8 @@ html[data-theme="dark"] .word-list-empty-state p {
   font-weight: 600;
 }
 
-.word-list-words-grid {
+.word-list-words-grid,
+.word-list-activities-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
@@ -1489,12 +1205,6 @@ html[data-theme="dark"] .word-list-empty-state p {
   color: #6b7280;
 }
 
-.word-list-activities-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-
 .word-list-activity-card {
   display: flex;
   flex-direction: column;
@@ -1556,6 +1266,191 @@ html[data-theme="dark"] .word-list-empty-state p {
 }
 
 /* =========================
+   ASSESSMENT 2 BACK BUTTONS
+   ========================= */
+
+.word-list-detail-back-button,
+.activity-back-button {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #374151;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.word-list-detail-back-button:hover,
+.activity-back-button:hover {
+  background: #f3f4f6;
+  transform: translateX(-2px);
+}
+
+/* =========================
+   DARK MODE
+   ========================= */
+
+html[data-theme="dark"] body {
+  background: #111827;
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .navbar,
+html[data-theme="dark"] footer,
+html[data-theme="dark"] .activity-card,
+html[data-theme="dark"] .information-section,
+html[data-theme="dark"] .settings-card,
+html[data-theme="dark"] .settings-panel,
+html[data-theme="dark"] .preview-panel,
+html[data-theme="dark"] .about-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+html[data-theme="dark"] .navigation-links a:hover {
+  color: #60a5fa;
+}
+
+html[data-theme="dark"] .hero-description,
+html[data-theme="dark"] .section-heading p,
+html[data-theme="dark"] .activity-card p,
+html[data-theme="dark"] .information-section p,
+html[data-theme="dark"] .page-header p,
+html[data-theme="dark"] .about-card p,
+html[data-theme="dark"] .setting-status,
+html[data-theme="dark"] .phoneme-hint {
+  color: #9ca3af;
+}
+
+html[data-theme="dark"] .phoneme-keyboard button,
+html[data-theme="dark"] .search-cell,
+html[data-theme="dark"] .word-search-controls button,
+html[data-theme="dark"] .settings-panel button,
+html[data-theme="dark"] .theme-options button,
+html[data-theme="dark"] .secondary-button {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] .phoneme-tile {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] .search-cell.selected {
+  background: #1d4ed8;
+}
+
+html[data-theme="dark"] .video-placeholder {
+  background: #111827;
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] a:focus-visible,
+html[data-theme="dark"] button:focus-visible {
+  outline-color: #60a5fa;
+}
+
+/* =========================
+   WORD LISTS - DARK MODE
+   ========================= */
+
+html[data-theme="dark"] .word-lists-page {
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .word-lists-header p,
+html[data-theme="dark"] .word-list-section-heading p {
+  color: #9ca3af;
+}
+
+html[data-theme="dark"] .word-list-form-card,
+html[data-theme="dark"] .word-list-card,
+html[data-theme="dark"] .word-list-empty-state {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+html[data-theme="dark"] .word-list-form input,
+html[data-theme="dark"] .word-list-form textarea {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] .word-list-form input::placeholder,
+html[data-theme="dark"] .word-list-form textarea::placeholder {
+  color: #9ca3af;
+}
+
+html[data-theme="dark"] .word-list-secondary-button,
+html[data-theme="dark"] .word-list-edit-button {
+  background: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] .word-list-secondary-button:hover,
+html[data-theme="dark"] .word-list-edit-button:hover {
+  background: #4b5563;
+}
+
+html[data-theme="dark"] .word-list-card h3 a {
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .word-list-card h3 a:hover {
+  color: #a5b4fc;
+}
+
+html[data-theme="dark"] .word-list-description {
+  color: #9ca3af;
+}
+
+html[data-theme="dark"] .word-list-description.muted {
+  color: #6b7280;
+}
+
+html[data-theme="dark"] .word-list-stats span {
+  background: #374151;
+  color: #d1d5db;
+}
+
+html[data-theme="dark"] .word-list-stats strong {
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .word-list-delete-button {
+  background: #374151;
+  border-color: #7f1d1d;
+  color: #f87171;
+}
+
+html[data-theme="dark"] .word-list-delete-button:hover {
+  background: #451a1a;
+}
+
+html[data-theme="dark"] .word-list-error {
+  background: #450a0a;
+  border-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+html[data-theme="dark"] .word-list-empty-state p {
+  color: #9ca3af;
+}
+
+/* =========================
    WORD LIST DETAIL - DARK MODE
    ========================= */
 
@@ -1596,13 +1491,6 @@ html[data-theme="dark"] .word-list-detail-form select {
 html[data-theme="dark"] .word-list-detail-form input::placeholder,
 html[data-theme="dark"] .word-list-detail-form textarea::placeholder {
   color: #9ca3af;
-}
-
-html[data-theme="dark"] .word-list-detail-form input[type="text"]:focus,
-html[data-theme="dark"] .word-list-detail-form textarea:focus,
-html[data-theme="dark"] .word-list-detail-form select:focus {
-  border-color: #818cf8;
-  box-shadow: 0 0 0 3px rgb(129 140 248 / 15%);
 }
 
 html[data-theme="dark"] .word-list-detail-secondary-button,
@@ -1654,7 +1542,146 @@ html[data-theme="dark"] .word-list-activity-warning {
   color: #fcd34d;
 }
 
+/* =========================
+   DROPDOWNS - DARK MODE
+   ========================= */
+
+html[data-theme="dark"] select {
+  background-color: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+html[data-theme="dark"] select option {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+/* =========================
+   ASSESSMENT 2 BACK BUTTONS - DARK MODE
+   ========================= */
+
+html[data-theme="dark"] .word-list-detail-back-button,
+html[data-theme="dark"] .activity-back-button {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+html[data-theme="dark"] .word-list-detail-back-button:hover,
+html[data-theme="dark"] .activity-back-button:hover {
+  background: #4b5563;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
 @media (max-width: 700px) {
+  .navbar {
+    padding: 1rem;
+  }
+
+  .menu-button {
+    display: block;
+  }
+
+  .navigation-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .navigation-links.navigation-open {
+    display: flex;
+  }
+
+  .navigation-links a {
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  html[data-theme="dark"] .navigation-links {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  html[data-theme="dark"] .navigation-links a {
+    border-color: #374151;
+  }
+
+  .hero-section {
+    padding: 3rem 1rem;
+  }
+
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-section h2 {
+    font-size: 1.4rem;
+  }
+
+  .activities-section {
+    padding: 2rem 1rem;
+  }
+
+  .activity-grid,
+  .about-grid,
+  .builder {
+    grid-template-columns: 1fr;
+  }
+
+  .wordle-page,
+  .word-search-page,
+  .about-page,
+  .settings-page {
+    padding: 2rem 1rem;
+  }
+
+  .settings-panel,
+  .preview-panel,
+  .about-card {
+    padding: 1.5rem;
+  }
+
+  .information-section {
+    margin: 1rem;
+  }
+
+  .word-lists-page {
+    padding: 2rem 1rem 3rem;
+  }
+
+  .word-list-form-card {
+    padding: 1.5rem;
+  }
+
+  .word-lists-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .word-list-form-actions,
+  .word-list-card-actions {
+    flex-direction: column;
+  }
+
+  .word-list-primary-button,
+  .word-list-secondary-button,
+  .word-list-view-button,
+  .word-list-edit-button,
+  .word-list-delete-button {
+    width: 100%;
+  }
+
   .word-list-detail-page {
     padding: 2rem 1rem 3rem;
   }
@@ -1693,20 +1720,4 @@ html[data-theme="dark"] .word-list-activity-warning {
   .word-list-detail-delete-button {
     width: 100%;
   }
-}
-
-/* =========================
-   BUILDER DROPDOWNS - DARK MODE
-   Fix native select backgrounds
-   ========================= */
-
-html[data-theme="dark"] select {
-  background-color: #374151;
-  color: #f9fafb;
-  border-color: #4b5563;
-}
-
-html[data-theme="dark"] select option {
-  background-color: #374151;
-  color: #f9fafb;
 }
