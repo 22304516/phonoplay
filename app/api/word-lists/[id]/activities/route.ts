@@ -52,59 +52,85 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const startedAt = Date.now();
+  let activityType: "WORDLE" | "WORD_SEARCH" | null = null;
+
+  // Analytics must never prevent the main application from working.
+  async function recordEvent(success: boolean, errorMessage?: string) {
+    if (!activityType) return;
+
+    try {
+      await prisma.generationEvent.create({
+        data: {
+          type: activityType,
+          success,
+          errorMessage: errorMessage ?? null,
+          durationMs: Math.max(0, Date.now() - startedAt),
+          source: "LIVE",
+        },
+      });
+    } catch (error) {
+      console.error("Failed to record generation analytics:", error);
+    }
+  }
+
+  async function fail(message: string, status: number) {
+    await recordEvent(false, message);
+
+    return NextResponse.json({ error: message }, { status });
+  }
+
   try {
     const { id } = await params;
     const wordListId = Number(id);
 
-    if (!Number.isInteger(wordListId)) {
-      return Response.json({ error: "Invalid word list ID" }, { status: 400 });
+    if (!Number.isInteger(wordListId) || wordListId <= 0) {
+      return NextResponse.json(
+        { error: "Invalid word list ID" },
+        { status: 400 },
+      );
     }
 
     const body = await request.json();
-
     const { name, type, difficulty, hint, wordId, settings } = body;
 
-    if (typeof name !== "string" || name.trim() === "") {
-      return Response.json({ error: "Name is required" }, { status: 400 });
+    if (type === "WORDLE" || type === "WORD_SEARCH") {
+      activityType = type;
     }
 
-    if (!["WORDLE", "WORD_SEARCH"].includes(type)) {
-      return Response.json({ error: "Invalid activity type" }, { status: 400 });
+    if (typeof name !== "string" || name.trim() === "") {
+      return fail("Name is required", 400);
+    }
+
+    if (!activityType) {
+      return NextResponse.json(
+        { error: "Invalid activity type" },
+        { status: 400 },
+      );
     }
 
     if (!["EASY", "MEDIUM", "HARD"].includes(difficulty)) {
-      return Response.json({ error: "Invalid difficulty" }, { status: 400 });
+      return fail("Invalid difficulty", 400);
     }
 
     if (hint !== undefined && typeof hint !== "boolean") {
-      return Response.json(
-        { error: "Hint must be a boolean" },
-        { status: 400 },
-      );
+      return fail("Hint must be a boolean", 400);
     }
 
     if (settings !== undefined && typeof settings !== "string") {
-      return Response.json(
-        { error: "Settings must be a string" },
-        { status: 400 },
-      );
+      return fail("Settings must be a string", 400);
     }
 
     if (typeof settings === "string") {
       try {
         JSON.parse(settings);
       } catch {
-        return Response.json(
-          { error: "Settings must contain valid JSON" },
-          { status: 400 },
-        );
+        return fail("Settings must contain valid JSON", 400);
       }
     }
 
     const wordList = await prisma.wordList.findUnique({
-      where: {
-        id: wordListId,
-      },
+      where: { id: wordListId },
       include: {
         words: {
           include: {
@@ -115,30 +141,31 @@ export async function POST(
     });
 
     if (!wordList) {
-      return Response.json({ error: "Word list not found" }, { status: 404 });
+      return fail("Word list not found", 404);
     }
 
     let targetWordId: number | undefined;
 
-    if (type === "WORDLE" && (wordId === undefined || wordId === null)) {
-      return Response.json(
-        { error: "Wordle activities require a target word" },
-        { status: 400 },
-      );
+    if (
+      activityType === "WORDLE" &&
+      (wordId === undefined || wordId === null)
+    ) {
+      return fail("Wordle activities require a target word", 400);
     }
 
-    if (type === "WORD_SEARCH" && wordId !== undefined && wordId !== null) {
-      return Response.json(
-        { error: "Word Search activities cannot have a target word" },
-        { status: 400 },
-      );
+    if (
+      activityType === "WORD_SEARCH" &&
+      wordId !== undefined &&
+      wordId !== null
+    ) {
+      return fail("Word Search activities cannot have a target word", 400);
     }
 
     if (wordId !== undefined && wordId !== null) {
       targetWordId = Number(wordId);
 
-      if (!Number.isInteger(targetWordId)) {
-        return Response.json({ error: "Invalid word ID" }, { status: 400 });
+      if (!Number.isInteger(targetWordId) || targetWordId <= 0) {
+        return fail("Invalid word ID", 400);
       }
 
       const word = await prisma.word.findFirst({
@@ -149,14 +176,11 @@ export async function POST(
       });
 
       if (!word) {
-        return Response.json(
-          { error: "Word not found in this word list" },
-          { status: 404 },
-        );
+        return fail("Word not found in this word list", 404);
       }
     }
 
-    if (type === "WORD_SEARCH") {
+    if (activityType === "WORD_SEARCH") {
       const gridSize =
         difficulty === "EASY" ? 7 : difficulty === "MEDIUM" ? 8 : 9;
 
@@ -165,11 +189,9 @@ export async function POST(
       );
 
       if (usableWords.length === 0) {
-        return NextResponse.json(
-          {
-            error: `No words in this word list can fit in a ${gridSize}×${gridSize} grid.`,
-          },
-          { status: 400 },
+        return fail(
+          `No words in this word list can fit in a ${gridSize}×${gridSize} grid.`,
+          400,
         );
       }
     }
@@ -177,7 +199,7 @@ export async function POST(
     const activity = await prisma.activity.create({
       data: {
         name: name.trim(),
-        type,
+        type: activityType,
         difficulty,
         hint: hint ?? true,
         wordListId,
@@ -186,11 +208,15 @@ export async function POST(
       },
     });
 
-    return Response.json(activity, { status: 201 });
-  } catch (error) {
-    console.error(error);
+    await recordEvent(true);
 
-    return Response.json(
+    return NextResponse.json(activity, { status: 201 });
+  } catch (error) {
+    console.error("Failed to create activity:", error);
+
+    await recordEvent(false, "Failed to create activity");
+
+    return NextResponse.json(
       { error: "Failed to create activity" },
       { status: 500 },
     );
