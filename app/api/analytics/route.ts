@@ -9,22 +9,18 @@ export async function GET() {
       totalWordLists,
       totalWords,
       totalActivities,
-      generationTotals,
       wordleGenerations,
       wordSearchGenerations,
       usageSummary,
+      generationSummary,
       recentGenerations,
       emptyWordLists,
-      recentFailures,
     ] = await Promise.all([
       prisma.wordList.count(),
-      prisma.word.count(),
-      prisma.activity.count(),
 
-      prisma.generationEvent.groupBy({
-        by: ["success"],
-        _count: { _all: true },
-      }),
+      prisma.word.count(),
+
+      prisma.activity.count(),
 
       prisma.generationEvent.count({
         where: { type: "WORDLE", source: "LIVE" },
@@ -34,7 +30,18 @@ export async function GET() {
         where: { type: "WORD_SEARCH", source: "LIVE" },
       }),
 
+      // Average time spent on pages
       prisma.usageEvent.aggregate({
+        where: {
+          source: "LIVE",
+          durationMs: { not: null, gte: 0 },
+        },
+        _avg: { durationMs: true },
+        _count: { _all: true },
+      }),
+
+      // Average generation time across ALL measured live attempts
+      prisma.generationEvent.aggregate({
         where: {
           source: "LIVE",
           durationMs: { not: null, gte: 0 },
@@ -59,24 +66,18 @@ export async function GET() {
 
       prisma.wordList.findMany({
         where: { words: { none: {} } },
-        select: {
-          id: true,
-          name: true,
-        },
-      }),
-
-      prisma.generationEvent.count({
-        where: {
-          source: "LIVE",
-          success: false,
-        },
+        select: { id: true, name: true },
       }),
     ]);
 
     const liveGenerationCounts = await prisma.generationEvent.groupBy({
       by: ["success"],
-      where: { source: "LIVE" },
-      _count: { _all: true },
+      where: {
+        source: "LIVE",
+      },
+      _count: {
+        _all: true,
+      },
     });
 
     const successfulGenerations =
@@ -139,6 +140,8 @@ export async function GET() {
         mostUsedType,
         averageTimeOnPageMs: usageSummary._avg.durationMs,
         measuredPageVisits: usageSummary._count._all,
+        averageGenerationTimeMs: generationSummary._avg.durationMs,
+        measuredGenerations: generationSummary._count._all,
       },
       recentGenerations,
       emptyWordLists,
@@ -152,7 +155,9 @@ export async function GET() {
       {
         error: "Unable to load analytics data.",
       },
-      { status: 500 },
+      {
+        status: 500,
+      },
     );
   }
 }
