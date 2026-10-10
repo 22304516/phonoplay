@@ -876,15 +876,6 @@ export default function DashboardPage() {
                 </div>
               </Panel>
             </section>
-
-            {/* Footer note */}
-            <footer className="flex flex-col gap-2 border-t border-slate-200 py-5 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-              <p>
-                <span className="font-semibold text-slate-700">PhonoPlay</span>{" "}
-                · Phoneme Activity Builder
-              </p>
-              <p>Analytics refresh automatically every 30 seconds.</p>
-            </footer>
           </>
         ) : null}
       </div>

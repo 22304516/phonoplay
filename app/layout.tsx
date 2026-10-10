@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import ThemeInitializer from "./components/ThemeInitializer";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import UsageTracker from "./components/UsageTracker";
@@ -19,10 +20,9 @@ export default function RootLayout({
     <html lang="en" data-scroll-behavior="smooth">
       <body className="flex min-h-screen flex-col">
         <UsageTracker />
+        <ThemeInitializer />
         <Navbar />
-
         <main className="site-main flex-1">{children}</main>
-
         <Footer />
       </body>
     </html>
