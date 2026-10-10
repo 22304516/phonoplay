@@ -1,3 +1,4 @@
+@import "tailwindcss";
 /* =========================
    GLOBAL
    ========================= */
@@ -1741,4 +1742,114 @@ html[data-theme="dark"] .activity-back-button:hover {
   .navigation-links {
     min-height: 24px;
   }
+}
+
+/* Dashboard dark mode */
+html[data-theme="dark"] .dashboard-page {
+  background-color: #111827;
+  color: #f9fafb;
+}
+
+/* Dashboard cards and panels */
+html[data-theme="dark"] .dashboard-page .bg-white {
+  background-color: #1f2937;
+}
+
+html[data-theme="dark"] .dashboard-page .bg-slate-50,
+html[data-theme="dark"] .dashboard-page .bg-slate-50\/80,
+html[data-theme="dark"] .dashboard-page .bg-slate-50\/70 {
+  background-color: #182230;
+}
+
+html[data-theme="dark"] .dashboard-page .bg-slate-100 {
+  background-color: #374151;
+}
+
+/* Borders and separators */
+html[data-theme="dark"] .dashboard-page .border-slate-100,
+html[data-theme="dark"] .dashboard-page .border-slate-200,
+html[data-theme="dark"] .dashboard-page .border-slate-200\/80 {
+  border-color: #374151;
+}
+
+/* Main text */
+html[data-theme="dark"] .dashboard-page .text-slate-900,
+html[data-theme="dark"] .dashboard-page .text-slate-950,
+html[data-theme="dark"] .dashboard-page .text-slate-800 {
+  color: #f3f4f6;
+}
+
+/* Secondary text */
+html[data-theme="dark"] .dashboard-page .text-slate-700,
+html[data-theme="dark"] .dashboard-page .text-slate-600 {
+  color: #d1d5db;
+}
+
+html[data-theme="dark"] .dashboard-page .text-slate-500 {
+  color: #9ca3af;
+}
+
+/* Tables */
+html[data-theme="dark"] .dashboard-page thead {
+  background-color: #182230;
+}
+
+html[data-theme="dark"] .dashboard-page tbody {
+  border-color: #374151;
+}
+
+html[data-theme="dark"] .dashboard-page tr:hover {
+  background-color: #273449;
+}
+
+/* Hover states */
+html[data-theme="dark"] .dashboard-page .hover\:bg-slate-50\/80:hover {
+  background-color: #273449;
+}
+
+/* Usage metric cards */
+html[data-theme="dark"] .dashboard-page .border-slate-100 {
+  border-color: #374151;
+}
+
+/* Informational panels */
+html[data-theme="dark"] .dashboard-page .border-indigo-100 {
+  border-color: #3730a3;
+}
+
+html[data-theme="dark"] .dashboard-page .bg-indigo-50\/70 {
+  background-color: #25234b;
+}
+
+html[data-theme="dark"] .dashboard-page .text-indigo-950 {
+  color: #e0e7ff;
+}
+
+html[data-theme="dark"] .dashboard-page .text-indigo-700 {
+  color: #a5b4fc;
+}
+
+/* Loading state */
+html[data-theme="dark"] .dashboard-page .text-indigo-600 {
+  color: #a5b4fc;
+}
+
+/* Footer */
+html[data-theme="dark"] .dashboard-page footer {
+  border-color: #374151;
+}
+
+html[data-theme="dark"] .dashboard-page footer .text-slate-700 {
+  color: #e5e7eb;
+}
+
+/* Smooth theme transitions */
+.dashboard-page article,
+.dashboard-page section,
+.dashboard-page table,
+.dashboard-page button {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
 }
