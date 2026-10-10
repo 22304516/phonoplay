@@ -50,7 +50,7 @@ export default function ThemeSelector() {
           Dark Mode
         </button>
       </div>
-
+      <br />
       <p className="setting-status">
         Current theme: <strong>{theme}</strong>
       </p>

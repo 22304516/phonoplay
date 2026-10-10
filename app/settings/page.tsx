@@ -13,12 +13,6 @@ export default function Settings() {
       <section className="settings-card">
         <ThemeSelector />
       </section>
-
-      <section className="settings-card">
-        <h2>Layout</h2>
-
-        <LayoutSelector />
-      </section>
     </div>
   );
 }
