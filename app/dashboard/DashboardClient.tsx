@@ -127,7 +127,7 @@ export default function DashboardPage() {
     : [];
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-10">
+    <div className="bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-7xl space-y-8">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -172,7 +172,7 @@ export default function DashboardPage() {
 
         {loading && !data ? (
           <div
-            className="rounded-2xl border border-slate-200 bg-white p-12 text-center text-slate-500 shadow-sm"
+            className="min-h-[700px] rounded-2xl border border-slate-200 bg-white p-12 text-center text-slate-500 shadow-sm"
             role="status"
           >
             Loading analytics...
