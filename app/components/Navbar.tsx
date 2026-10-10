@@ -50,6 +50,10 @@ export default function Navbar() {
           Word Lists
         </Link>
 
+        <Link href="/dashboard" onClick={closeMenu}>
+          Dashboard
+        </Link>
+
         <Link href="/about" onClick={closeMenu}>
           About
         </Link>
