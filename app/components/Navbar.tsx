@@ -54,12 +54,12 @@ export default function Navbar() {
           Dashboard
         </Link>
 
-        <Link href="/about" onClick={closeMenu}>
-          About
-        </Link>
-
         <Link href="/settings" onClick={closeMenu}>
           Settings
+        </Link>
+
+        <Link href="/about" onClick={closeMenu}>
+          About
         </Link>
       </div>
     </nav>
